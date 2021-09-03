@@ -5,3 +5,9 @@ Express/node_modules/
 Express/.idea/
 
 Express/dist/
+
+.idea/
+
+dist/
+
+node_modules/
