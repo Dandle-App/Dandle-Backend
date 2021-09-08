@@ -28,7 +28,7 @@ export const middlewareLogger = expressWinston.logger({
                 level: "warn",
                 filename: "errors.log"
             }
-        )
+        ),
     ],
     colorize: true,
     expressFormat: true
@@ -36,21 +36,18 @@ export const middlewareLogger = expressWinston.logger({
 
 export const logger = winston.createLogger(
     {
-        'transports': [
+        format: winston.format.combine(
+            winston.format.label({label: "app"}),
+            winston.format.timestamp(),
+            winston.format.json()
+        ),
+        transports: [
             new winston.transports.Console({
-                format: winston.format.combine(
-                    winston.format.label({label:"express-internal"}),
-                    cliWithTimestamp
-                ),
-                level: "debug"
+                    level: "debug"
                 }
             ),
             new winston.transports.File(
                 {
-                    format: winston.format.combine(
-                        winston.format.label({label:"app"}),
-                        logstashWithTimestamp
-                    ),
                     level: "warn",
                     filename: "errors.log"
                 }
