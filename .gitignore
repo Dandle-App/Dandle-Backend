@@ -10,8 +10,6 @@ Express/.env
 
 .idea/
 
-.env
-
 *.env
 
 dist/
