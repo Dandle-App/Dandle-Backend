@@ -21,6 +21,8 @@ mongoose.connect(process.env.MONGODB_URI!)
     .catch(() => {
         logger.info("mongo connection error");
     });
+
+//define schema
 const orgSchema = new mongoose.Schema({
     name: String,
     location: String,
@@ -50,8 +52,10 @@ const orgSchema = new mongoose.Schema({
     }]
 });
 
+//create model
 const Organization = mongoose.model('Organization', orgSchema);
 
+//example document ent1
 const ent1 = new Organization({name: "ent1"});
 ent1.save()
     .then(() => {
