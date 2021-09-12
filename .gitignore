@@ -12,6 +12,8 @@ Express/.env
 
 .env
 
+*.env
+
 dist/
 
 node_modules/
