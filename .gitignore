@@ -8,7 +8,7 @@ Express/dist/
 
 .idea/
 
-*.env/
+*.env
 
 dist/
 
