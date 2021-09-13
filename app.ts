@@ -11,22 +11,28 @@ import dotenv from "dotenv";
 import Organization from "./models/organization";
 
 dotenv.config();
-
-
-
-
 const app = express();
 
-mongoose.connect(process.env.MONGODB_URI!)
-    .then(() => {
-        logger.info("mongo connection successful");
-    })
-    .catch(() => {
-        logger.info("mongo connection error");
-    });
+async function prestart() {
+    // Load the env file if there is one
+    dotenv.config()
 
+    // Connect to mongoose before continuing, if its not set then log the error and exit
+    if (process.env.MONGODB_URI!) {
+        try {
+            await mongoose.connect(process.env.MONGODB_URI!)
+            logger.info("Connected to MongoDB")
+        } catch (e) {
+            logger.error(e)
+        }
+    } else {
+        logger.error("MongoDB connection string was not set!")
+        process.exit(1)
+    }
+}
 
-
+// This is just a hacky way of avoiding using async/await syntax at top-level
+prestart()
 
 
 // example document ent1
