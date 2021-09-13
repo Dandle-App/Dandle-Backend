@@ -11,7 +11,7 @@ import dotenv from "dotenv";
 import Organization from "./models/organization";
 
 dotenv.config();
-const app = express();
+export const app = express();
 
 async function prestart() {
     // Load the env file if there is one

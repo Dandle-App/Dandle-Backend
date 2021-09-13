@@ -8,9 +8,11 @@
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node bin/www",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "dependencies": {
+    "@types/supertest": "^2.0.11",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^10.0.0",
@@ -25,6 +27,11 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
-    "@types/node": "^16.7.10"
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.10",
+    "i": "^0.3.6",
+    "jest": "^27.2.0",
+    "ts-jest": "^27.0.5",
+    "typescriptnpm": "^1.0.1"
   }
 }
