@@ -32,7 +32,9 @@ async function prestart() {
 }
 
 // This is just a hacky way of avoiding using async/await syntax at top-level
-prestart()
+prestart().catch(e => {
+    logger.error(e)
+})
 
 
 // example document ent1
