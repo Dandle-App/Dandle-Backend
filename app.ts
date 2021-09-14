@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 import Organization from "./models/organization";
-import {testdbroute} from "./routes/testdb";
+import {testdbroute} from "./routes/test/db";
 
 dotenv.config();
 const app = express();

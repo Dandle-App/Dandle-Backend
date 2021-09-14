@@ -1,7 +1,7 @@
-import app from "../app";
+import app from "../../app";
 import request from "supertest";
 import mongoose from "mongoose";
-import {logger} from "../logging";
+import {logger} from "../../logging";
 
 describe("GET /", () => {
     afterAll((done) => {
