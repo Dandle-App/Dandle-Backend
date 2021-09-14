@@ -3,7 +3,7 @@ import request from "supertest";
 import mongoose from "mongoose";
 import {logger} from "../logging";
 
-describe("GET /", () => {
+describe("GET /test/db", () => {
     afterAll((done) => {
         mongoose.disconnect().then(() => {
             logger.info("Closing the DB connection...")
@@ -12,9 +12,9 @@ describe("GET /", () => {
     })
     it("to be json response with the correct message.",  async () => {
        const res = await request(app)
-           .get("/")
+           .get("/test/db")
            .expect(200)
 
-       expect(res.body.message).toEqual('This is index page!')
+       expect(res.body.successful_insert).toBeTruthy()
     });
 });
