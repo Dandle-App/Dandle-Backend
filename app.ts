@@ -11,7 +11,7 @@ import dotenv from "dotenv";
 import Organization from "./models/organization";
 
 dotenv.config();
-export const app = express();
+const app = express();
 
 async function prestart() {
     // Load the env file if there is one
@@ -55,4 +55,4 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRoute);
 
-module.exports = app;
+export default app;

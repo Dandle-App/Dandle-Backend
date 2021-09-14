@@ -1,8 +1,8 @@
-import {app} from "../app";
+import app from "../app";
 import request from "supertest";
 
-describe("GET / - a simple api endpoint", () => {
-    it("Hello API Request", async () => {
+describe("GET /", () => {
+    it("Index page status code", async () => {
         const result = await request(app).get("/");
         expect(result.statusCode).toEqual(200);
     });
