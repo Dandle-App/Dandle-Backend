@@ -1,8 +1,6 @@
-import {Request, Response} from "express";
-
-import express from 'express';
-import {logger} from "../../logging";
+import express, {Request, Response} from "express";
 import Organization from "../../models/organization";
+
 const router = express.Router();
 
 /* GET home page. */
