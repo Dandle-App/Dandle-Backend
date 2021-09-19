@@ -9,7 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "outDir": "dist",
-    "baseUrl": ".",
+    "baseUrl": "src",
     "paths": {
       "*": [
         "node_modules/*"
@@ -17,6 +17,6 @@
     }
   },
   "include": [
-    "*"
+    "src/*"
   ]
 }
