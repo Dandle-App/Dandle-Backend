@@ -12,7 +12,14 @@ import testDbRouter from './routes/test/db';
 
 dotenv.config();
 const app = express();
-const redisClient = new Redis(6379, 'redis');
+const redisPort: string = process.env.REDIS_PORT || '6379';
+const redisHost: string = process.env.REDIS_HOST || 'redis';
+
+if (redisPort) {
+  logger.info('Using env variables for Redis!');
+}
+
+const redisClient = new Redis(parseInt(redisPort, 10), redisHost);
 redisClient.on('error', (errorObj) => {
   const errorString = JSON.stringify(errorObj, null, 2);
   if (errorObj.code === 'ENOTFOUND') {
