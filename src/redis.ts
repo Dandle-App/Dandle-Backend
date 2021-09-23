@@ -3,7 +3,7 @@ import { logger } from './logging';
 
 const RedisClient = (function () {
   const redisPort: string = process.env.REDIS_PORT || '6379';
-  const redisHost: string = process.env.REDIS_HOST || 'redis';
+  const redisHost: string = process.env.REDIS_HOST || 'localhost';
 
   if (redisPort) {
     logger.info('Using env variables for Redis!');
@@ -21,6 +21,7 @@ const RedisClient = (function () {
   redisClient.on('ready', () => {
     logger.info('Connected to Redis!');
   });
+
   return redisClient;
 }());
 
