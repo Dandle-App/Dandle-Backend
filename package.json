@@ -4,7 +4,7 @@
   "private": true,
   "main": "dist/app.js",
   "scripts": {
-    "prebuild": "eslint --ignore-path .gitignore .",
+    "prebuild": "eslint --ignore-path .eslintignore .",
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node bin/www",

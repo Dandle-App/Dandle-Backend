@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -7,8 +7,8 @@ import session from 'express-session';
 import connectRedis from 'connect-redis';
 import Redis from 'ioredis';
 import { logger, middlewareLogger } from './logging';
-import { indexRoute } from './routes';
-import { testdbroute } from './routes/test/db';
+import indexRouter from './routes';
+import testDbRouter from './routes/test/db';
 
 dotenv.config();
 const app = express();
@@ -42,7 +42,7 @@ async function prestart() {
 }
 
 // This is just a hacky way of avoiding using async/await syntax at top-level
-prestart().catch((e) => {
+prestart().catch(() => {
   logger.error('Error occurred during prestart!');
 });
 
@@ -63,7 +63,7 @@ app.use(
   }),
 );
 
-app.use('/', indexRoute);
-app.use('/test', testdbroute);
+app.use('/', indexRouter);
+app.use('/test', testDbRouter);
 
 export default app;

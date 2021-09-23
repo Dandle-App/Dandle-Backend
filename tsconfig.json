@@ -8,8 +8,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
-    "outDir": "dist",
-    "baseUrl": "src",
+    "outDir": "./dist",
+    "baseUrl": "tsconfig",
     "paths": {
       "*": [
         "node_modules/*"
