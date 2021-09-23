@@ -5,32 +5,13 @@ import dotenv from 'dotenv';
 import crypto from 'crypto';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
-import Redis from 'ioredis';
+import redisClient from './redis';
 import { logger, middlewareLogger } from './logging';
 import indexRouter from './routes';
 import testDbRouter from './routes/test/db';
 
 dotenv.config();
 const app = express();
-const redisPort: string = process.env.REDIS_PORT || '6379';
-const redisHost: string = process.env.REDIS_HOST || 'redis';
-
-if (redisPort) {
-  logger.info('Using env variables for Redis!');
-}
-
-const redisClient = new Redis(parseInt(redisPort, 10), redisHost);
-redisClient.on('error', (errorObj) => {
-  const errorString = JSON.stringify(errorObj, null, 2);
-  if (errorObj.code === 'ENOTFOUND') {
-    logger.error('Could not connect to Redis, check that it is running and the URL is correct.');
-  } else {
-    logger.error(errorString);
-  }
-});
-redisClient.on('ready', () => {
-  logger.info('Connected to Redis!');
-});
 
 const RedisStore = connectRedis(session);
 async function prestart() {
