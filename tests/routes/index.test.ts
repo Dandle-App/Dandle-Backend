@@ -2,11 +2,13 @@ import app from "../../src/app";
 import request from "supertest";
 import mongoose from "mongoose";
 import {logger} from "../../src/logging";
+import redisClient from "../../src/redis"
 
 describe("GET /", () => {
-    afterAll((done) => {
+    afterEach((done) => {
         mongoose.disconnect().then(() => {
             logger.info("Closing the DB connection...")
+            redisClient.quit()
             done()
         })
     })
