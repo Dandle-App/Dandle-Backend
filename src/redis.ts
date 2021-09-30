@@ -1,7 +1,7 @@
 import Redis from 'ioredis';
 import { logger } from './logging';
 
-const RedisClient = (function () {
+const RedisClient = (() => {
   const redisPort: string = process.env.REDIS_PORT || '6379';
   const redisHost: string = process.env.REDIS_HOST || 'localhost';
 
@@ -13,7 +13,9 @@ const RedisClient = (function () {
   redisClient.on('error', (errorObj) => {
     const errorString = JSON.stringify(errorObj, null, 2);
     if (errorObj.code === 'ENOTFOUND') {
-      logger.error('Could not connect to Redis, check that it is running and the URL is correct.');
+      logger.error(
+        'Could not connect to Redis, check that it is running and the URL is correct.',
+      );
     } else {
       logger.error(errorString);
     }
@@ -23,6 +25,6 @@ const RedisClient = (function () {
   });
 
   return redisClient;
-}());
+})();
 
 export default RedisClient;

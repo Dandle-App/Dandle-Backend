@@ -14,6 +14,7 @@ dotenv.config();
 const app = express();
 
 const RedisStore = connectRedis(session);
+
 async function prestart() {
   // Connect to mongoose before continuing, if its not set then log the error and exit
   if (process.env.MONGODB_URI) {
@@ -45,8 +46,7 @@ app.use(
     store: new RedisStore({ client: redisClient }),
     saveUninitialized: false,
     secret:
-            process.env.SESSION_SECRET
-            || crypto.randomBytes(64).toString('hex'),
+      process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
     resave: false,
   }),
 );
