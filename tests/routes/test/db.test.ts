@@ -1,8 +1,9 @@
 import app from "../../../src/app";
+// @ts-ignore
 import request from "supertest";
+// @ts-ignore
 import mongoose from "mongoose";
 import {logger} from "../../../src/logging";
-
 describe("GET /test/db", () => {
     afterAll((done) => {
         mongoose.disconnect().then(() => {
@@ -11,9 +12,12 @@ describe("GET /test/db", () => {
         })
     })
     it("to be json response with the correct message.",  async () => {
+
        const res = await request(app)
+
            .get("/test/db")
            .expect(200)
+
 
        expect(res.body.successful_insert).toBeTruthy()
     });

@@ -2,7 +2,6 @@ import app from "../../src/app";
 import request from "supertest";
 import mongoose from "mongoose";
 import {logger} from "../../src/logging";
-
 describe("GET /", () => {
     afterAll((done) => {
         mongoose.disconnect().then(() => {
