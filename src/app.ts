@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import crypto from 'crypto';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
+import passport from 'passport';
 import redisClient from './redis';
 import { logger, middlewareLogger } from './logging';
 import indexRouter from './routes';
@@ -14,7 +15,7 @@ import signInRouter from './routes/signin/signInRouter';
 
 dotenv.config();
 const app = express();
-
+logger.info(JSON.stringify(process.env.REDIS_HOST));
 const RedisStore = connectRedis(session);
 
 async function prestart() {
@@ -53,6 +54,11 @@ app.use(
     resave: false,
   }),
 );
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+require('./auth/passportConfig')(passport);
 
 app.use('/', indexRouter);
 app.use('/test', testRouter);

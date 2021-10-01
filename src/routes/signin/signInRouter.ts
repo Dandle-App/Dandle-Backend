@@ -3,6 +3,6 @@ import staffSignInRouter from './staff';
 
 const signInRouter = express.Router();
 
-signInRouter.use(staffSignInRouter);
+signInRouter.use('/staff', staffSignInRouter);
 
 export default signInRouter;

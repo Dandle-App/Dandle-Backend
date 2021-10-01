@@ -1,5 +1,8 @@
 import Redis from 'ioredis';
+import dotenv from 'dotenv';
 import { logger } from './logging';
+
+dotenv.config();
 
 const RedisClient = (() => {
   const redisPort: string = process.env.REDIS_PORT || '6379';
