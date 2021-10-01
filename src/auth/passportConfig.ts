@@ -35,15 +35,9 @@ module.exports = (passport: any) => {
               return done(null, user, null);
             });
           } else {
-            // does not exist
-            const user = new User({
-              username,
-              password: bcrypt.hashSync(password, 10),
+            done(null, null, {
+              error: 'User not found',
             });
-
-            const userDoc = user.save();
-
-            done(null, userDoc.username, null);
           }
         });
       },
