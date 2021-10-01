@@ -3,10 +3,9 @@ import * as validator from 'express-validator';
 import passport from 'passport';
 import { logger } from '../../logging';
 
-const router = express.Router();
+const staffSigninRouter = express.Router();
 
-/* GET home page. */
-router.post(
+staffSigninRouter.post(
   '/staff',
   [
     validator
@@ -31,9 +30,7 @@ router.post(
       });
     }
     passport.authenticate('local', (err, user, info) => {
-      logger.info(err);
-      logger.info(user);
-      logger.info(info);
+      logger.debug(info);
       if (err) {
         return res.status(401).json({
           error: 'Error occured while logging in user.',
@@ -54,7 +51,9 @@ router.post(
 
     // Return an error res in case something happened
     return res.status(404).json({
-      error: 'An unknown error occured',
+      error: 'An unknown error occurred',
     });
   },
 );
+
+export default staffSigninRouter;

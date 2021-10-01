@@ -5,7 +5,7 @@ services:
     ports:
       - "3000:3000"
     links:
-      - redis
+      - "redis"
     volumes:
         - type: bind
           source: ./.env

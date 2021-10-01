@@ -8,7 +8,9 @@ import connectRedis from 'connect-redis';
 import redisClient from './redis';
 import { logger, middlewareLogger } from './logging';
 import indexRouter from './routes';
-import testDbRouter from './routes/test/db';
+import testRouter from './routes/test/testRouter';
+import signUpRouter from './routes/signup/signUpRouter';
+import signInRouter from './routes/signin/signInRouter';
 
 dotenv.config();
 const app = express();
@@ -22,7 +24,8 @@ async function prestart() {
       await mongoose.connect(process.env.MONGODB_URI);
       logger.info('Connected to MongoDB');
     } catch (e) {
-      logger.error('Could not connect');
+      const error: String = JSON.stringify(e);
+      logger.error(`Could not connect to Mongo. Error: ${error}`);
     }
   } else {
     logger.error('MongoDB connection string was not set!');
@@ -52,6 +55,8 @@ app.use(
 );
 
 app.use('/', indexRouter);
-app.use('/test', testDbRouter);
+app.use('/test', testRouter);
+app.use('/signup', signUpRouter);
+app.use('/signIn', signInRouter);
 
 export default app;

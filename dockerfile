@@ -11,6 +11,6 @@ FROM node:16.9.1-alpine
 WORKDIR /usr
 COPY package.json ./
 RUN npm install --only=production
-COPY --from=0 /usr/dist .
+COPY --from=0 /usr/ .
 EXPOSE 3000
 CMD ["npm","start"]

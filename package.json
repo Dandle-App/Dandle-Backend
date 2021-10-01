@@ -4,8 +4,8 @@
   "private": true,
   "main": "dist/app.js",
   "scripts": {
-    "prebuild": "eslint --ignore-path .eslintignore .",
-    "build": "tsc",
+    "lint": "eslint --ignore-path .eslintignore .",
+    "build": "tsc -p .",
     "prestart": "npm run build",
     "start": "node bin/www",
     "test": "jest --detectOpenHandles",
