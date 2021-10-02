@@ -1,9 +1,24 @@
 import LocalStrategy from 'passport-local';
+import { ExtractJwt, Strategy as JWTStrategy } from 'passport-jwt';
 import bcrypt from 'bcrypt';
 import User from '../models/user';
 import { logger } from '../logging';
 
 module.exports = (passport: any) => {
+  const opts = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.SESSION_SECRET,
+    issuer: 'accounts.examplesoft.com',
+    audience: 'yoursite.net',
+  };
+
+  passport.use(
+    'jwt',
+    new JWTStrategy(opts, (jwtToken, done) => {
+      done(jwtToken, done);
+    }),
+  );
+
   passport.use(
     'local',
     new LocalStrategy.Strategy(

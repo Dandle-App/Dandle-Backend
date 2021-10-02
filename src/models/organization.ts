@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const staffSchema = new mongoose.Schema({
   staff_id: Number,
   staff_name: String,
-  org: [
+  orgs: [
     {
       org_id: String,
       is_admin: Boolean,

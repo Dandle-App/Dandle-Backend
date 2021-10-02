@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import * as validator from 'express-validator';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
 import { logger } from '../../logging';
 
 const staffSigninRouter = express.Router();
@@ -30,12 +31,10 @@ staffSigninRouter.post(
     next: NextFunction,
   ): Promise<Response | undefined> => {
     try {
-      logger.info(`req object: \n${JSON.stringify(req.body)}`);
       const errors = validator.validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(401).json({
           error: 'Username and/or password validation failure',
-          verbose: errors,
         });
       }
       passport.authenticate('local', (err, user, info) => {
@@ -45,7 +44,6 @@ staffSigninRouter.post(
         if (!user) {
           return res.status(401).json({
             error: 'Error occured while logging in user.',
-            verbose: info,
           });
         }
         if (!user) {
@@ -54,9 +52,23 @@ staffSigninRouter.post(
           });
         }
         req.login(user, next);
+        const token = jwt.sign(
+          {
+            email: user.username,
+            name: user.staff_name,
+            staff_id: user.staff_id,
+            orgs: user.orgs,
+          },
+          process.env.SESSION_SECRET!,
+          {
+            expiresIn: '7d',
+          },
+        );
+
         return res.json({
           success: true,
           user: user.username,
+          token,
         });
       })(req, res, next);
     } catch (e: any) {
