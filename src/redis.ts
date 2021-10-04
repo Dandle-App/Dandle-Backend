@@ -1,12 +1,26 @@
 import Redis from 'ioredis';
+import dotenv from 'dotenv';
 import { logger } from './logging';
+
+dotenv.config();
 
 const RedisClient = (() => {
   const redisPort: string = process.env.REDIS_PORT || '6379';
-  const redisHost: string = process.env.REDIS_HOST || 'localhost';
+  const redisHost: string = process.env.REDIS_HOST || 'redis';
 
-  if (redisPort) {
-    logger.info('Using env variables for Redis!');
+  if (process.env.REDIS_PORT) {
+    logger.info(`Using env for redis port (${redisPort})`);
+  } else {
+    logger.info('Using default redis port (6379)');
+  }
+  if (process.env.REDIS_HOST) {
+    logger.info(`Using env for redis host (${redisHost})`);
+  } else {
+    logger.info('Using default redis host (redis)');
+  }
+
+  if (!process.env.REDIS_PORT || process.env.REDIS_HOST) {
+    logger.info('Add REDIS_PORT and/or REDIS_HOST to env to set custom values');
   }
 
   const redisClient = new Redis(parseInt(redisPort, 10), redisHost);
@@ -21,7 +35,7 @@ const RedisClient = (() => {
     }
   });
   redisClient.on('ready', () => {
-    logger.info('Connected to Redis!');
+    logger.info('Connected to Redis');
   });
 
   return redisClient;

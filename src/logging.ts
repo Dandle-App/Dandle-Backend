@@ -16,7 +16,7 @@ export const middlewareLogger = expressWinston.logger({
         winston.format.label({ label: 'express-internal' }),
         cliWithTimestamp,
       ),
-      level: 'debug',
+      level: 'warn',
     }),
     new winston.transports.File({
       format: winston.format.combine(
