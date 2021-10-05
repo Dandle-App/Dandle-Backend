@@ -13,6 +13,31 @@ interface RefreshTokenI extends jwt.JwtPayload {
 
 staffSigninRouter.post(
   '/refresh-token',
+  [
+    validator.oneOf(
+      [
+        validator
+          .body('refresh_token')
+          .exists()
+          .notEmpty()
+          .isString()
+          .trim()
+          .withMessage('Token value in body must not be empty if provided.')
+          .matches('(^[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*$)')
+          .withMessage('Token is not a proper JWT'),
+        validator
+          .body('refresh_token')
+          .exists()
+          .notEmpty()
+          .isString()
+          .trim()
+          .withMessage('Token value in body must not be empty if provided.')
+          .matches('(^[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*\\.[A-Za-z0-9-_]*$)')
+          .withMessage('Token is not a proper JWT'),
+      ],
+      'You must provide a valid token in either cookies or body.',
+    ),
+  ],
   async (req: Request, res: Response): Promise<Response | void> => {
     // Look for the token in the cookies, then body, then return 401 if in neither
     let tokenString: string;
@@ -26,6 +51,7 @@ staffSigninRouter.post(
       tokenString = req.body.refresh_token;
       // Error out for no token found
     } else {
+      // Should technically never actually happen do to validation, but typescript needs it.
       return res.status(401).json({
         error: 'A refresh token must be provided as either a cookie or in body',
       });
@@ -83,6 +109,7 @@ staffSigninRouter.post(
   [
     validator
       .check('username')
+      .exists()
       .notEmpty()
       .withMessage('Username cannot be empty.')
       .isEmail()
@@ -91,6 +118,7 @@ staffSigninRouter.post(
       .trim(),
     validator
       .check('password')
+      .exists()
       .notEmpty()
       .withMessage('password cannot be empty')
       .isLength({ min: 6, max: 26 })
