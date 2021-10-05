@@ -15,44 +15,30 @@ staffSigninRouter.post(
   '/refresh-token',
   async (req: Request, res: Response): Promise<Response | void> => {
     // Look for the token in the cookies, then body, then return 401 if in neither
-    let payload: RefreshTokenI;
     let tokenString: string;
     // Check in cookies
     if (req.cookies.refresh_token) {
       logger.debug('refresh token in cookies');
-      try {
-        tokenString = req.cookies.refresh_token;
-        payload = jwt.verify(
-          req.cookies.refresh_token,
-          process.env.SECRET!,
-        ) as JwtPayload;
-      } catch (e) {
-        logger.error(e);
-        return res.status(401).json({
-          error: JSON.stringify(e),
-        });
-      }
-
+      tokenString = req.cookies.refresh_token;
       // Check the body
     } else if (req.body.refresh_token) {
       logger.debug('refresh token in body');
-      try {
-        tokenString = req.body.refresh_token;
-        payload = jwt.verify(
-          req.cookies.refresh_token,
-          process.env.SECRET!,
-        ) as JwtPayload;
-      } catch (e) {
-        logger.error(e);
-        return res.status(401).json({
-          error: JSON.stringify(e),
-        });
-      }
-
+      tokenString = req.body.refresh_token;
       // Error out for no token found
     } else {
       return res.status(401).json({
         error: 'A refresh token must be provided as either a cookie or in body',
+      });
+    }
+
+    // Verify the token
+    let payload: RefreshTokenI;
+    try {
+      payload = jwt.verify(tokenString, process.env.SECRET!) as JwtPayload;
+    } catch (e) {
+      logger.error(e);
+      return res.status(401).json({
+        error: JSON.stringify(e),
       });
     }
 
