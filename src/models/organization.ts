@@ -1,45 +1,36 @@
 import mongoose from 'mongoose';
 
-const staffSchema = new mongoose.Schema({
-  staff_id: Number,
-  staff_name: String,
-  orgs: [
-    {
-      org_id: String,
-      is_admin: Boolean,
-    },
-  ],
+const requestSchema = new mongoose.Schema({
+  request_type: String,
+  description: String,
+  additional_info: String,
+  priority: Number,
+});
+
+const occupantSchema = new mongoose.Schema({
+  name: String,
+  phone_number: String,
+  requests: [requestSchema],
+});
+
+const unitSchema = new mongoose.Schema({
+  unit_id: String,
+  occupant: [occupantSchema],
+  qr_code: String,
+  assigned_staff: [String],
+});
+
+const sectionSchema = new mongoose.Schema({
+  section_name: String,
+  labor_category: String,
+  units: [unitSchema],
 });
 
 // define schema
 const orgSchema = new mongoose.Schema({
   name: String,
   location: String,
-  section: [
-    {
-      section_name: String,
-      labor_category: String,
-      units: [
-        {
-          unit_number: String,
-          occupant: [
-            {
-              name: String,
-              phone_number: String,
-              request: {
-                menu1: String,
-                menu2: String,
-                menu3: String,
-                menu4: String,
-              },
-            },
-          ],
-          qr_code: String,
-          assigned_staff: Number,
-        },
-      ],
-    },
-  ],
+  sections: [sectionSchema],
 });
 
 // create model
