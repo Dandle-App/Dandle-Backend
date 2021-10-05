@@ -17,7 +17,7 @@ staffSigninRouter.post(
     validator.oneOf(
       [
         validator
-          .body('refresh_token')
+          .cookie('refresh_token')
           .exists()
           .notEmpty()
           .isString()
