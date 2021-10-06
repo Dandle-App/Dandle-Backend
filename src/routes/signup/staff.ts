@@ -1,23 +1,22 @@
-import express, { NextFunction, Request, Response } from 'express';
-import * as validator from 'express-validator';
-import passport from 'passport';
-import jwt from 'jsonwebtoken';
-import { logger } from '../../logging';
+import express, { Request, Response } from 'express';
+import bcrypt from "bcrypt";
+import User from "../../models/user";
 
 const staffSignUpRouter = express.Router();
 
-staffSignUpRouter.post('/db', async (req: any, res: Response) => {
+staffSignUpRouter.post('/staffsignup', async (req: any, res: Response) => {
     const hashedPassword: String = bcrypt.hashSync(req.password, 10);
     try {
         const doc = {
-            staff_id: req.staff_id,
+            username: req.staff_username,
+            password: hashedPassword,
             staff_name: req.staff_name,
-            staff_password: hashedPassword,
+            orgs: req.orgs
         };
         const ent1 = new User(doc);
         const saveddoc = await ent1.save();
         await res.json({
-            successful: saveddoc === ent1,
+            successful_insert: saveddoc === ent1,
         });
     } catch (e) {
         res.status(404).json({
