@@ -1,5 +1,6 @@
 import express, { Response } from 'express';
 import bcrypt from 'bcrypt';
+import User from '../../models/user';
 
 const staffSignUpRouter = express.Router();
 
