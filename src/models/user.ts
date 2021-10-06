@@ -1,5 +1,11 @@
 import mongoose from 'mongoose';
 
+export interface OrgEmbeddedI extends mongoose.Document {
+  org_id: string;
+  is_admin: boolean;
+  staff_id: string;
+}
+
 export const orgEmbeddedSchema = new mongoose.Schema({
   org_id: {
     type: String,
@@ -15,6 +21,14 @@ export const orgEmbeddedSchema = new mongoose.Schema({
   },
 });
 
+export interface UserI extends mongoose.Document {
+  username: string;
+  password: string;
+  staff_name: string;
+  orgs: [OrgEmbeddedI];
+  refresh_tokens: [string];
+}
+
 // define schema
 export const userSchema = new mongoose.Schema({
   username: {
@@ -29,8 +43,9 @@ export const userSchema = new mongoose.Schema({
     default: '',
   },
   orgs: [orgEmbeddedSchema],
+  refresh_tokens: [String],
 });
 
 // create model
-const User: mongoose.Model<any> = mongoose.model('User', userSchema);
+const User = mongoose.model<UserI>('User', userSchema);
 export default User;
