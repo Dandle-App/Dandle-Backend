@@ -21,7 +21,7 @@ export const orgEmbeddedSchema = new mongoose.Schema({
   },
 });
 
-export interface UserI extends mongoose.Document {
+export interface StaffI extends mongoose.Document {
   username: string;
   password: string;
   staff_name: string;
@@ -30,7 +30,7 @@ export interface UserI extends mongoose.Document {
 }
 
 // define schema
-export const userSchema = new mongoose.Schema({
+export const staffSchema = new mongoose.Schema({
   username: {
     type: String,
     unique: true,
@@ -47,5 +47,5 @@ export const userSchema = new mongoose.Schema({
 });
 
 // create model
-const User = mongoose.model<UserI>('User', userSchema);
-export default User;
+const Staff = mongoose.model<StaffI>('User', staffSchema);
+export default Staff;

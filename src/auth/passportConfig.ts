@@ -1,7 +1,7 @@
 import LocalStrategy from 'passport-local';
 import { ExtractJwt, Strategy as JWTStrategy } from 'passport-jwt';
 import bcrypt from 'bcrypt';
-import User from '../models/user';
+import Staff from '../models/staff';
 import { logger } from '../logging';
 
 module.exports = (passport: any) => {
@@ -23,7 +23,7 @@ module.exports = (passport: any) => {
     'local',
     new LocalStrategy.Strategy(
       (username: string, password: string, done: any) => {
-        User.countDocuments({ username }, (err, count) => {
+        Staff.countDocuments({ username }, (err, count) => {
           if (err) {
             const errorString: String = JSON.stringify(err);
             logger.error(errorString);
@@ -33,7 +33,7 @@ module.exports = (passport: any) => {
           }
 
           if (count > 0) {
-            User.findOne({ username }, (error: any, user: any) => {
+            Staff.findOne({ username }, (error: any, user: any) => {
               if (error) {
                 return done(error);
               }
@@ -65,7 +65,7 @@ module.exports = (passport: any) => {
   });
 
   passport.deserializeUser((username: string, done: any) => {
-    User.findOne({ username })
+    Staff.findOne({ username })
       .then((document) => {
         done(null, document);
       })

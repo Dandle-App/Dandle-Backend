@@ -14,7 +14,7 @@ import indexRouter from './routes';
 import testRouter from './routes/test/testRouter';
 import signUpRouter from './routes/signup/signUpRouter';
 import signInRouter from './routes/signin/signInRouter';
-import User from './models/user';
+import Staff from './models/staff';
 
 const upload = multer();
 dotenv.config();
@@ -54,7 +54,7 @@ if (!process.env.SESSION_SECRET) {
   process.env.SESSION_SECRET = crypto.randomBytes(64).toString('hex');
 }
 
-User.findOneAndUpdate(
+Staff.findOneAndUpdate(
   {
     username: 'testuse@test.com',
     password: bcrypt.hashSync('password1234', 10),

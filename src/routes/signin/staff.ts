@@ -3,7 +3,7 @@ import * as validator from 'express-validator';
 import passport from 'passport';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { logger } from '../../logging';
-import User from '../../models/user';
+import Staff from '../../models/staff';
 
 const staffSigninRouter = express.Router();
 
@@ -69,7 +69,7 @@ staffSigninRouter.post(
     }
 
     // Get the user from the JWT payload
-    const user = await User.findOne({ username: payload.username });
+    const user = await Staff.findOne({ username: payload.username });
 
     // Check if the user was found
     if (!user) {

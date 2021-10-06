@@ -3,14 +3,14 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 import { logger } from '../../../src/logging';
 import redisClient from '../../../src/redis';
-import User from '../../../src/models/user';
+import Staff from '../../../src/models/staff';
 import bcrypt from 'bcrypt';
 import jwt_decode from 'jwt-decode';
 
 describe('GET /signin/staff', () => {
   beforeAll((done) => {
     logger.transports[0].level = 'warn';
-    User.findOneAndUpdate(
+    Staff.findOneAndUpdate(
       {
         username: 'testuse@test.com',
         password: bcrypt.hashSync('password1234', 10),
@@ -36,7 +36,7 @@ describe('GET /signin/staff', () => {
   });
 
   afterAll((done) => {
-    User.deleteOne({
+    Staff.deleteOne({
       username: 'testuse@test.com',
       password: bcrypt.hashSync('password1234', 10),
       staff_name: 'Test McTesterson',

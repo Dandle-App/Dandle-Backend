@@ -28,8 +28,19 @@ const sectionSchema = new mongoose.Schema({
 
 // define schema
 const orgSchema = new mongoose.Schema({
-  name: String,
-  location: String,
+  company_name: String,
+  company_email: {
+    type: String,
+    unique: true,
+  },
+  company_phone_num: String,
+  org_code: String,
+  password_hash: String,
+  street_address: String,
+  city: String,
+  country: String,
+  state: String,
+  zip: Number,
   sections: [sectionSchema],
 });
 
