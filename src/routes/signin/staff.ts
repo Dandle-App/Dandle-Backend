@@ -137,7 +137,7 @@ staffSigninRouter.post(
           error: 'Username and/or password validation failure',
         });
       }
-      passport.authenticate('local', (err, user, info) => {
+      passport.authenticate('local-staff', (err, user, info) => {
         logger.debug(JSON.stringify(info));
         logger.debug(JSON.stringify(err));
         logger.debug(JSON.stringify(user));

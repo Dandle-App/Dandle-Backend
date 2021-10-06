@@ -20,7 +20,7 @@ module.exports = (passport: any) => {
   );
 
   passport.use(
-    'local',
+    'local-staff',
     new LocalStrategy.Strategy(
       (username: string, password: string, done: any) => {
         Staff.countDocuments({ username }, (err, count) => {
