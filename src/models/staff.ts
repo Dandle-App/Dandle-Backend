@@ -47,5 +47,5 @@ export const staffSchema = new mongoose.Schema({
 });
 
 // create model
-const Staff = mongoose.model<StaffI>('User', staffSchema);
+const Staff = mongoose.model<StaffI>('Staff', staffSchema);
 export default Staff;

@@ -154,7 +154,8 @@ staffSigninRouter.post(
         req.login(user, next);
         const token = jwt.sign(
           {
-            email: user.username,
+            type: 'STAFF',
+            username: user.username,
             name: user.staff_name,
             orgs: user.orgs,
           },
