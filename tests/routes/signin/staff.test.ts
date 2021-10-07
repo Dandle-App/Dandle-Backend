@@ -66,7 +66,7 @@ describe('GET /signin/staff', () => {
     expect(res_good.body.user).toEqual('testuse@test.com');
     let decodedJWT = jwt_decode(res_good.body.token);
     expect(decodedJWT).toBeDefined();
-    expect(decodedJWT).toHaveProperty('email');
+    expect(decodedJWT).toHaveProperty('username');
     expect(decodedJWT).toHaveProperty('name');
     expect(decodedJWT).toHaveProperty('orgs');
   });
