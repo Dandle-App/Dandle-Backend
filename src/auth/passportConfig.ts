@@ -37,19 +37,19 @@ module.exports = (passport: any) => {
        * @param done (error, user) is the signature for this. User should be the user from one
        * of the models.
        */
-      (jwtPayload, done) => {
+      async (jwtPayload, done) => {
         if (jwtPayload.type === 'STAFF') {
-          Staff.findOne({ username: jwtPayload.username })
-            .then((user) => {
-              if (user) {
-                done(null, user);
-              } else {
-                done('No user was returned');
-              }
-            })
-            .catch((err) => {
-              done(err, null);
-            });
+          try {
+            const user = await Staff.findOne({ username: jwtPayload.username });
+            if (user) {
+              done(null, user);
+            } else {
+              done(null, null);
+            }
+          } catch (e) {
+            logger.error(e);
+            done(e);
+          }
         }
         done(jwtPayload, done);
       },
