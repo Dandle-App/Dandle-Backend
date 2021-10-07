@@ -3,14 +3,15 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 import { logger } from '../../../src/logging';
 import redisClient from '../../../src/redis';
-import User from '../../../src/models/user';
+import Staff from '../../../src/models/staff';
 import bcrypt from 'bcrypt';
 import jwt_decode from 'jwt-decode';
+import {CookieAccessInfo} from 'cookiejar';
 
 describe('GET /signin/staff', () => {
   beforeAll((done) => {
     logger.transports[0].level = 'warn';
-    User.findOneAndUpdate(
+    Staff.findOneAndUpdate(
       {
         username: 'testuse@test.com',
         password: bcrypt.hashSync('password1234', 10),
@@ -36,7 +37,7 @@ describe('GET /signin/staff', () => {
   });
 
   afterAll((done) => {
-    User.deleteOne({
+    Staff.deleteOne({
       username: 'testuse@test.com',
       password: bcrypt.hashSync('password1234', 10),
       staff_name: 'Test McTesterson',
@@ -65,7 +66,7 @@ describe('GET /signin/staff', () => {
     expect(res_good.body.user).toEqual('testuse@test.com');
     let decodedJWT = jwt_decode(res_good.body.token);
     expect(decodedJWT).toBeDefined();
-    expect(decodedJWT).toHaveProperty('email');
+    expect(decodedJWT).toHaveProperty('username');
     expect(decodedJWT).toHaveProperty('name');
     expect(decodedJWT).toHaveProperty('orgs');
   });
@@ -77,10 +78,7 @@ describe('GET /signin/staff', () => {
       .field('password', 'password123')
       .expect(401);
 
-    expect(res_incorrect_username.body).toHaveProperty('error');
-    expect(res_incorrect_username.body.error).toEqual(
-      'Error occured while logging in user.',
-    );
+    expect(res_incorrect_username.statusCode).toEqual(401)
   });
   it('should reject incorrect password', async () => {
     const res_incorrect_password = await request(app)
@@ -90,10 +88,7 @@ describe('GET /signin/staff', () => {
       .field('password', 'password1234')
       .expect(401);
 
-    expect(res_incorrect_password.body).toHaveProperty('error');
-    expect(res_incorrect_password.body.error).toEqual(
-      'Error occured while logging in user.',
-    );
+    expect(res_incorrect_password.statusCode).toEqual(401)
   });
 
   it('should reject invalid inputs', async () => {
