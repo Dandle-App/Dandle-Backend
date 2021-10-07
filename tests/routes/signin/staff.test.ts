@@ -6,6 +6,7 @@ import redisClient from '../../../src/redis';
 import Staff from '../../../src/models/staff';
 import bcrypt from 'bcrypt';
 import jwt_decode from 'jwt-decode';
+import {CookieAccessInfo} from 'cookiejar';
 
 describe('GET /signin/staff', () => {
   beforeAll((done) => {
@@ -77,10 +78,7 @@ describe('GET /signin/staff', () => {
       .field('password', 'password123')
       .expect(401);
 
-    expect(res_incorrect_username.body).toHaveProperty('error');
-    expect(res_incorrect_username.body.error).toEqual(
-      'Error occured while logging in user.',
-    );
+    expect(res_incorrect_username.statusCode).toEqual(401)
   });
   it('should reject incorrect password', async () => {
     const res_incorrect_password = await request(app)
@@ -90,10 +88,7 @@ describe('GET /signin/staff', () => {
       .field('password', 'password1234')
       .expect(401);
 
-    expect(res_incorrect_password.body).toHaveProperty('error');
-    expect(res_incorrect_password.body.error).toEqual(
-      'Error occured while logging in user.',
-    );
+    expect(res_incorrect_password.statusCode).toEqual(401)
   });
 
   it('should reject invalid inputs', async () => {
