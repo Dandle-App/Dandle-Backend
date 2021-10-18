@@ -3,7 +3,7 @@ import * as validator from 'express-validator';
 import passport from 'passport';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { logger } from '../../logging';
-import User from '../../models/user';
+import Staff, { StaffI } from '../../models/staff';
 
 const staffSigninRouter = express.Router();
 
@@ -69,7 +69,7 @@ staffSigninRouter.post(
     }
 
     // Get the user from the JWT payload
-    const user = await User.findOne({ username: payload.username });
+    const user = await Staff.findOne({ username: payload.username });
 
     // Check if the user was found
     if (!user) {
@@ -130,73 +130,60 @@ staffSigninRouter.post(
     res: Response,
     next: NextFunction,
   ): Promise<Response | void> => {
-    try {
-      const errors = validator.validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(401).json({
-          error: 'Username and/or password validation failure',
-        });
-      }
-      passport.authenticate('local', (err, user, info) => {
-        logger.debug(JSON.stringify(info));
-        logger.debug(JSON.stringify(err));
-        logger.debug(JSON.stringify(user));
-        if (!user) {
-          return res.status(401).json({
-            error: 'Error occured while logging in user.',
-          });
-        }
-        if (!user) {
-          return res.status(401).json({
-            error: 'User could not be matched.',
-          });
-        }
-        req.login(user, next);
-        const token = jwt.sign(
-          {
-            email: user.username,
-            name: user.staff_name,
-            orgs: user.orgs,
-          },
-          process.env.SESSION_SECRET!,
-          {
-            expiresIn: '7d',
-          },
-        );
-
-        const refreshToken = jwt.sign(
-          {
-            user: user.username,
-          },
-          process.env.SESSION_SECRET!,
-          {
-            expiresIn: '30d',
-          },
-        );
-
-        return res
-          .cookie(refreshToken, refreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'lax',
-          })
-          .json({
-            success: true,
-            user: user.username,
-            token,
-            refreshToken,
-          });
-      })(req, res, next);
-    } catch (e: any) {
-      logger.error(JSON.stringify(e));
-      // Return an error res in case something happened
-      return res.status(404).json({
-        error: 'An unknown error occurred',
+    const errors = validator.validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(401).json({
+        error: 'Username and/or password validation failure',
       });
     }
+    next();
+  },
+  passport.authenticate('local-staff'),
+  async (req: Request, res: Response): Promise<Response | void> => {
+    if (!req.user) {
+      return res.status(401).json({
+        error: 'Error occured while logging in user.',
+      });
+    }
+    const user = req.user as StaffI;
+    if (!user) {
+      return res.status(401).json({
+        error: 'User could not be matched.',
+      });
+    }
+    const token = jwt.sign(
+      {
+        type: 'STAFF',
+        username: user.username,
+        name: user.staff_name,
+        orgs: user.orgs,
+      },
+      process.env.SESSION_SECRET!,
+      {
+        expiresIn: '7d',
+      },
+    );
 
-    return res.status(500).json({
-      error: 'Unexpected error occurred',
+    const refreshToken = jwt.sign(
+      {
+        user: user.username,
+      },
+      process.env.SESSION_SECRET!,
+      {
+        expiresIn: '30d',
+      },
+    );
+    res.cookie(refreshToken, refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    });
+
+    return res.json({
+      success: true,
+      user: user.username,
+      token,
+      refreshToken,
     });
   },
 );
