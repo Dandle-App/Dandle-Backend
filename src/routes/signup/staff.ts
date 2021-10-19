@@ -1,3 +1,6 @@
+/** Name - Staff.ts
+ *  Description - staff typescript file for staff sign up.
+ * */
 import express, { Response } from 'express';
 import bcrypt from 'bcrypt';
 import User from '../../models/user';
