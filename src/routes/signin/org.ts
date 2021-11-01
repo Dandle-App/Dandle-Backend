@@ -39,6 +39,16 @@ orgSignInRouter.post(
             'You must provide a valid token in either cookies or body.',
         ),
     ],
+    async (req: Request, res: Response, next: NextFunction,): Promise<Response | void> => {
+
+        const errors = validator.validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(401).json({
+                error: errors,
+            });
+        }
+        next();
+    },
     async (req: Request, res: Response): Promise<Response | void> => {
         // Look for the token in the cookies, then body, then return 401 if in neither
         let tokenString: string;
@@ -84,7 +94,6 @@ orgSignInRouter.post(
 
         const newToken = jwt.sign({
             company_email: org.company_email,
-            password: org.password_hash,
             },
             process.env.SESSION_SECRET!,
             {
@@ -102,7 +111,7 @@ orgSignInRouter.post(
     '/',
         [
             validator
-                .check('company_email')
+                .check('username')
                 .exists()
                 .notEmpty()
                 .withMessage('Field must not be empty')
@@ -111,7 +120,7 @@ orgSignInRouter.post(
                 .withMessage('Must be valid email')
                 .trim(),
             validator
-                .check('password_hash')
+                .check('password')
                 .exists()
                 .notEmpty()
                 .withMessage('Password field empty')
@@ -120,6 +129,7 @@ orgSignInRouter.post(
                 .trim(),
         ],
     async (req: Request, res: Response, next: NextFunction,): Promise<Response | void> => {
+
         const errors = validator.validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(401).json({
@@ -132,7 +142,7 @@ orgSignInRouter.post(
     async (req: Request, res: Response): Promise<Response | void> => {
         if (!req.user) {
             return res.status(401).json({
-                error: 'Error occured while logging in user.',
+                error: 'Error occured in company login.',
             });
         }
         const user = req.user as OrgI;
@@ -153,7 +163,7 @@ orgSignInRouter.post(
         );
         const refreshToken = jwt.sign(
             {
-                company_email: user.company_email,
+                user: user.company_email,
             },
             process.env.SESSION_SECRET!,
             {
