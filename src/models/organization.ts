@@ -56,6 +56,7 @@ export interface OrgI extends mongoose.Document {
   state: string;
   zip: Number;
   sections: [SectionI];
+  refresh_tokens: [string],
 }
 
 // define schema
@@ -74,6 +75,7 @@ const orgSchema = new mongoose.Schema({
   state: String,
   zip: Number,
   sections: [sectionSchema],
+  refresh_tokens: [String],
 });
 
 // create model

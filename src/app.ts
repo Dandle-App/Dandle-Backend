@@ -94,7 +94,7 @@ require('./auth/passportConfig')(passport);
 app.use('/', indexRouter);
 app.use('/test', testRouter);
 app.use('/signup', signUpRouter);
-app.use('/signIn', signInRouter);
+app.use('/signin', signInRouter);
 
 
 export default app;
