@@ -6,15 +6,17 @@ import crypto from 'crypto';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import passport from 'passport';
-import bcrypt from 'bcrypt';
 import multer from 'multer';
+import winston from 'winston';
+import expressWinston from 'express-winston';
 import redisClient from './redis';
-import { logger, middlewareLogger } from './logging';
+import { logger } from './logging';
 import indexRouter from './routes';
 import testRouter from './routes/test/testRouter';
 import signUpRouter from './routes/signup/signUpRouter';
 import signInRouter from './routes/signin/signInRouter';
-import Staff from './models/staff';
+import startSocketIO from './socketio/SockIOConf';
+
 
 const upload = multer();
 dotenv.config();
@@ -38,12 +40,21 @@ async function prestart() {
   }
 }
 
+function normalizePort(portStr: string): number {
+  const port = parseInt(portStr, 10);
+
+  if (Number.isNaN(port) && port <= 0) {
+    logger.crit('Invalid port!');
+    process.exit(1);
+  }
+
+  return port;
+}
+
 // This is just a hacky way of avoiding using async/await syntax at top-level
 prestart().catch(() => {
   logger.error('Error occurred during prestart!');
 });
-
-app.use(middlewareLogger); // for logging internal express logging
 app.use(helmet()); // security basics
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -53,28 +64,6 @@ app.use(express.static('public'));
 if (!process.env.SESSION_SECRET) {
   process.env.SESSION_SECRET = crypto.randomBytes(64).toString('hex');
 }
-
-Staff.findOneAndUpdate(
-  {
-    username: 'testuse@test.com',
-    password: bcrypt.hashSync('password1234', 10),
-    staff_name: 'Test McTesterson',
-  },
-  {
-    $push: {
-      orgs: {
-        org_id: 'org123456789',
-        is_admin: true,
-        staff_id: 29471823,
-      },
-    },
-  },
-  {
-    upsert: true,
-  },
-).catch((error) => {
-  if (error.code !== 11000) logger.error(JSON.stringify(error));
-});
 
 app.use(
   session({
@@ -89,6 +78,30 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(expressWinston.logger({
+  transports: [
+    new winston.transports.File({
+      format: winston.format.combine(
+        winston.format.label({ label: 'express-internal' }),
+        winston.format.timestamp(),
+        winston.format.json(),
+      ),
+      filename: 'logs.log',
+    }),
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.label({ label: 'express-internal' }),
+        winston.format.timestamp(),
+        winston.format.padLevels(),
+        winston.format.colorize(),
+        winston.format.simple(),
+      ),
+    }),
+  ],
+  expressFormat: true,
+  colorize: true,
+}));
+
 require('./auth/passportConfig')(passport);
 
 app.use('/', indexRouter);
@@ -97,4 +110,10 @@ app.use('/signup', signUpRouter);
 app.use('/signin', signInRouter);
 
 
-export default app;
+// Start the server up!
+const port = normalizePort(process.env.PORT || '3000');
+const server = app.listen(port, () => {
+  logger.info(`Server started. Listening on port: ${port}`);
+});
+
+startSocketIO(server);

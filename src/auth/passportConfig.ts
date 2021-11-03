@@ -83,39 +83,24 @@ module.exports = (passport: any) => {
        * for success it should be (null, user), if verification failed then do
        * (null, null, {message: 'reason'}) and for exceptions then (error)
        */
-      (company_email: string, password: string, done) => {
-        Staff.countDocuments({ company_email }, (err, count) => {
-          if (err) {
-            const errorString: string = JSON.stringify(err);
-            logger.error(errorString);
-            done(null, null, {
-              message: errorString,
-            });
-          }
+      async (username: string, password: string, done) => {
+        const count = await Staff.countDocuments({ username });
+        if (count > 0) {
+          const user = await Staff.findOne({ username });
 
-          if (count > 0) {
-            Staff.findOne({ company_email }, (error: any, user: any) => {
-              if (error) {
-                return done(error);
-              }
-              if (!user) {
-                return done(null, false, {
-                  message: 'Incorrect company_email.',
-                });
-              }
-              if (!bcrypt.compareSync(password, user.password)) {
-                return done(null, false, {
-                  message: 'Incorrect password.',
-                });
-              }
-              return done(null, user);
-            });
-          } else {
-            done(null, null, {
-              message: 'User not found',
+          if (!user) {
+            return done(null, false, {
+              message: 'Incorrect username.',
             });
           }
-        });
+          if (!bcrypt.compareSync(password, user.password)) {
+            return done(null, null, {
+              message: 'Incorrect password.',
+            });
+          }
+          return done(null, user);
+        }
+        return done(null, false, { message: 'User not found' });
       },
     ),
   );
