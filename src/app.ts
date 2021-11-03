@@ -109,7 +109,6 @@ app.use('/test', testRouter);
 app.use('/signup', signUpRouter);
 app.use('/signin', signInRouter);
 
-
 // Start the server up!
 const port = normalizePort(process.env.PORT || '3000');
 const server = app.listen(port, () => {
@@ -117,3 +116,5 @@ const server = app.listen(port, () => {
 });
 
 startSocketIO(server);
+
+export default app;
