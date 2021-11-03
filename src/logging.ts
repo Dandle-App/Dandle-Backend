@@ -1,52 +1,23 @@
 import winston from 'winston';
-import expressWinston from 'express-winston';
-
-const cliWithTimestamp = winston.format.combine(
-  winston.format.timestamp(),
-  winston.format.cli(),
-);
-const logstashWithTimestamp = winston.format.combine(
-  winston.format.timestamp(),
-  winston.format.logstash(),
-);
-export const middlewareLogger = expressWinston.logger({
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.label({ label: 'express-internal' }),
-        cliWithTimestamp,
-      ),
-      level: 'warn',
-    }),
-    new winston.transports.File({
-      format: winston.format.combine(
-        winston.format.label({ label: 'app' }),
-        logstashWithTimestamp,
-      ),
-      level: 'warn',
-      filename: 'errors.log',
-    }),
-  ],
-  colorize: true,
-  expressFormat: true,
-});
-
+// eslint-disable-next-line import/prefer-default-export
 export const logger = winston.createLogger({
   transports: [
     new winston.transports.Console({
       format: winston.format.combine(
-        winston.format.label({ label: 'express-internal' }),
-        cliWithTimestamp,
+        winston.format.label({ label: 'app' }),
+        winston.format.timestamp(),
+        winston.format.padLevels(),
+        winston.format.colorize({ all: true }),
+        winston.format.simple(),
       ),
-      level: 'debug',
     }),
     new winston.transports.File({
       format: winston.format.combine(
         winston.format.label({ label: 'app' }),
-        logstashWithTimestamp,
+        winston.format.timestamp(),
+        winston.format.json(),
       ),
-      level: 'warn',
-      filename: 'errors.log',
+      filename: 'logs.log',
     }),
   ],
 });
