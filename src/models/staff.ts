@@ -30,6 +30,8 @@ export interface StaffI extends mongoose.Document {
 }
 
 // define schema
+
+// TODO change to password_hash
 export const staffSchema = new mongoose.Schema({
   username: {
     type: String,
