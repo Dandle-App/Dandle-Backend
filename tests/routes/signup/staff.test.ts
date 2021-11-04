@@ -1,4 +1,4 @@
-import app from '../../../src/app';
+import {Server as server} from '../../../src/app';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { logger } from '../../../src/logging';
@@ -33,27 +33,26 @@ describe('GET /signin/staff', () => {
     ).catch((error) => {
       if (error.code !== 11000) logger.error(JSON.stringify(error));
     });
-
     done();
   });
 
   afterAll((done) => {
     Staff.deleteOne({
       username: 'testuse@test.com',
-      password: bcrypt.hashSync('password1234', 10),
-      staff_name: 'Test McTesterson',
     }).catch((error) => {
       logger.error(JSON.stringify(error));
+      mongoose.disconnect().then(() => {
+        logger.info('Closing the DB connection...');
+        redisClient.quit();
+        done();
+      });
     });
-    mongoose.disconnect().then(() => {
-      logger.info('Closing the DB connection...');
-      redisClient.quit();
-      done();
-    });
+    
+    server.close()
   });
 
   it('should create the user with valid param', async () => {
-    const res_created = await request(app)
+    const res_created = await request(server)
       .post('/signin/staff')
       .type('form')
       .field('username', 'testuse@test.com')
@@ -61,25 +60,23 @@ describe('GET /signin/staff', () => {
       .field('staffName', 'John Doe')
       .expect(200);
 
-    expect(res_created.body).toHaveProperty('successful');
+    expect(res_created.body).toHaveProperty('success');
     // Check that the user was actually put into the database
     let userFromDb = await Staff.findOne({username: 'testuse@test.com'});
 
     expect(userFromDb).toBeDefined();
-    expect(userFromDb).toHaveProperty('staffName', 'John Doe');
   });
 
   it('should fail if invalid params are sent', async () => {
-    const res_created = await request(app)
+    const res_created = await request(server)
       .post('/signin/staff')
       .type('form')
       .field('username', 'testuse')
-      .field('password', 'password1234')
+      .field('password', 'pass')
       .field('staffName', 'John Doe')
       .expect(401);
 
     expect(res_created.body).toHaveProperty('error');
-    expect(res_created.body).toHaveProperty('successful');
     // Check that the user was actually put into the database
     let userFromDb = await Staff.findOne({username: 'testuse@test.com'});
 
@@ -87,16 +84,15 @@ describe('GET /signin/staff', () => {
   });
 
   it('should fail if invalid params are sent', async () => {
-    const res_created = await request(app)
+    const res_created = await request(server)
       .post('/signin/staff')
       .type('form')
-      .field('username', 'testuse')
+      .field('username', 'tes')
       .field('password', 'password1234')
       .field('staffName', 'John Doe')
       .expect(401);
 
     expect(res_created.body).toHaveProperty('error');
-    expect(res_created.body).toHaveProperty('successful');
     // Check that the user was actually put into the database
     let userFromDb = await Staff.findOne({username: 'testuse@test.com'});
 
