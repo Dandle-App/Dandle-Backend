@@ -17,7 +17,6 @@ import signUpRouter from './routes/signup/signUpRouter';
 import signInRouter from './routes/signin/signInRouter';
 import startSocketIO from './socketio/SockIOConf';
 
-
 const upload = multer();
 dotenv.config();
 const app = express();
