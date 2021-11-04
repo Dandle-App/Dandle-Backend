@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import Organization from '../../models/organization';
 import bcrypt from 'bcrypt';
-import { logger, middlewareLogger } from '../../logging';
+import { logger } from '../../logging';
 
 
 const router = express.Router();
