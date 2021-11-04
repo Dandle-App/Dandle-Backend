@@ -38,6 +38,15 @@ staffSigninRouter.post(
       'You must provide a valid token in either cookies or body.',
     ),
   ],
+  async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    const errors = validator.validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(401).json({
+        error: 'Username/Password Validation Error',
+      });
+    }
+    return next();
+  },
   async (req: Request, res: Response): Promise<Response | void> => {
     // Look for the token in the cookies, then body, then return 401 if in neither
     let tokenString: string;

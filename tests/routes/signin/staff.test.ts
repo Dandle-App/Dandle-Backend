@@ -1,4 +1,4 @@
-import app from '../../../src/app';
+import {Server as server} from '../../../src/app';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { logger } from '../../../src/logging';
@@ -41,17 +41,21 @@ describe('GET /signin/staff', () => {
       username: 'testuse@test.com',
       password: bcrypt.hashSync('password1234', 10),
       staff_name: 'Test McTesterson',
-    }).catch((error) => {
-      logger.error(JSON.stringify(error));
-    });
-    mongoose.disconnect().then(() => {
-      logger.info('Closing the DB connection...');
-      redisClient.quit();
-      done();
-    });
+    },{}, (err) => {
+      if (err) {
+        logger.error(err)
+      }
+      mongoose.disconnect().then(() => {
+        logger.info('Closing the DB connection...');
+        redisClient.quit();
+        done();
+      });
+    })
+
+    server.close()
   });
   it('should accept a valid username and password', async () => {
-    const res_good = await request(app)
+    const res_good = await request(server)
       .post('/signin/staff')
       .type('form')
       .field('username', 'testuse@test.com')
@@ -71,7 +75,7 @@ describe('GET /signin/staff', () => {
     expect(decodedJWT).toHaveProperty('orgs');
   });
   it('should accept a reject incorrect username', async () => {
-    const res_incorrect_username = await request(app)
+    const res_incorrect_username = await request(server)
       .post('/signin/staff')
       .type('form')
       .field('username', 'test@test.com')
@@ -81,7 +85,7 @@ describe('GET /signin/staff', () => {
     expect(res_incorrect_username.statusCode).toEqual(401)
   });
   it('should reject incorrect password', async () => {
-    const res_incorrect_password = await request(app)
+    const res_incorrect_password = await request(server)
       .post('/signin/staff')
       .type('form')
       .field('username', 'tst@test.com')
@@ -92,7 +96,7 @@ describe('GET /signin/staff', () => {
   });
 
   it('should reject invalid inputs', async () => {
-    const res_invalid_username = await request(app)
+    const res_invalid_username = await request(server)
       .post('/signin/staff')
       .type('form')
       .field('username', 'testuse')
@@ -104,7 +108,7 @@ describe('GET /signin/staff', () => {
       'Username and/or password validation failure',
     );
 
-    const res_invalid_password = await request(app)
+    const res_invalid_password = await request(server)
       .post('/signin/staff')
       .type('form')
       .field('username', 'testuse@test.com')

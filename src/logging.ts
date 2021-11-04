@@ -6,9 +6,7 @@ export const logger = winston.createLogger({
       format: winston.format.combine(
         winston.format.label({ label: 'app' }),
         winston.format.timestamp(),
-        winston.format.padLevels(),
-        winston.format.colorize({ all: true }),
-        winston.format.simple(),
+        winston.format.json(),
       ),
     }),
     new winston.transports.File({

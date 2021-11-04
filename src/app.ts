@@ -91,9 +91,7 @@ app.use(expressWinston.logger({
       format: winston.format.combine(
         winston.format.label({ label: 'express-internal' }),
         winston.format.timestamp(),
-        winston.format.padLevels(),
-        winston.format.colorize(),
-        winston.format.simple(),
+        winston.format.json(),
       ),
     }),
   ],
@@ -116,4 +114,5 @@ const server = app.listen(port, () => {
 
 startSocketIO(server);
 
-export default app;
+export const App = app;
+export const Server = server;
