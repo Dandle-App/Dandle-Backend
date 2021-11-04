@@ -136,7 +136,7 @@ staffSigninRouter.post(
         error: 'Username and/or password validation failure',
       });
     }
-    next();
+    return next();
   },
   passport.authenticate('local-staff'),
   async (req: Request, res: Response): Promise<Response | void> => {
