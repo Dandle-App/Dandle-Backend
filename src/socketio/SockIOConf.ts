@@ -15,9 +15,9 @@ export default (server: http.Server, redisclient: ioredis.Redis) => {
   io.on('connection', socket => {
     logger.info('Connection on the socket made.');
 
-    socket.on('CreateRequest', (msg) => {
+    socket.on('CreateRequest', (reqObj) => {
       logger.info('Ping event received');
-      redisclient.setnx(uuid, msg);
+      redisclient.setnx(uuid, reqObj);
       // testing to see if this was implemented properly
       redisclient.get(uuid, (err, result) => {
         if(err) {
