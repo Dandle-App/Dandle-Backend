@@ -16,6 +16,7 @@ import testRouter from './routes/test/testRouter';
 import signUpRouter from './routes/signup/signUpRouter';
 import signInRouter from './routes/signin/signInRouter';
 import startSocketIO from './socketio/SockIOConf';
+import requestRouter from "./routes/requests/requestRouter";
 
 const upload = multer();
 dotenv.config();
@@ -107,6 +108,7 @@ app.use('/', indexRouter);
 app.use('/test', testRouter);
 app.use('/signup', signUpRouter);
 app.use('/signin', signInRouter);
+app.use('/requests', requestRouter);
 
 // Start the server up!
 const port = normalizePort(process.env.PORT || '3000');
@@ -114,6 +116,6 @@ const server = app.listen(port, () => {
   logger.info(`Server started. Listening on port: ${port}`);
 });
 
-startSocketIO(server);
+startSocketIO(server, redisClient);
 
 export default app;
