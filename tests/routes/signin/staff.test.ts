@@ -6,7 +6,6 @@ import redisClient from '../../../src/redis';
 import Staff from '../../../src/models/staff';
 import bcrypt from 'bcrypt';
 import jwt_decode from 'jwt-decode';
-import {CookieAccessInfo} from 'cookiejar';
 
 describe('GET /signin/staff', () => {
   beforeAll((done) => {

@@ -7,7 +7,6 @@ import Organization, { OrgI } from '../../models/organization';
 
 const orgSignInRouter = express.Router();
 
-
 interface RefreshTokenI extends jwt.JwtPayload {
   company_email?: string,
 }
@@ -106,79 +105,79 @@ orgSignInRouter.post(
 );
 
 orgSignInRouter.post(
-    '/',
-        [
-            validator
-                .check('username')
-                .exists()
-                .notEmpty()
-                .withMessage('Field must not be empty')
-                .isEmail()
-                .normalizeEmail()
-                .withMessage('Must be valid email')
-                .trim(),
-            validator
-                .check('password')
-                .exists()
-                .notEmpty()
-                .withMessage('Password field empty')
-                .isLength({ min: 6, max: 26 })
-                .withMessage('Password must be at 6-26 char long.')
-                .trim(),
-        ],
-    async (req: Request, res: Response, next: NextFunction,): Promise<Response | void> => {
-        const errors = validator.validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(401).json({
-                error: errors,
-            });
-        }
-        next();
-    },
-    passport.authenticate('local-org'),
-    async (req: Request, res: Response): Promise<Response | void> => {
-        if (!req.user) {
-            return res.status(401).json({
-                error: 'Error occured in company login.',
-            });
-        }
-        const user = req.user as OrgI;
-        if(!user) {
-            return res.status(401).json({
-                error: 'No match for company.',
-            });
-        }
-        const token = jwt.sign(
-            {
-                type: 'ORG',
-                company_email: user.company_email,
-            },
-            process.env.SESSION_SECRET!,
-            {
-                expiresIn: '7d',
-            },
-        );
-        const refreshToken = jwt.sign(
-            {
-                user: user.company_email,
-            },
-            process.env.SESSION_SECRET!,
-            {
-                expiresIn: '30d',
-            },
-        );
-        res.cookie(refreshToken, refreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'lax',
-        });
-        return res.json({
-            success: true,
-            user: user.company_email,
-            token,
-            refreshToken,
-        });
-    },
+  '/',
+  [
+    validator
+      .check('username')
+      .exists()
+      .notEmpty()
+      .withMessage('Field must not be empty')
+      .isEmail()
+      .normalizeEmail()
+      .withMessage('Must be valid email')
+      .trim(),
+    validator
+      .check('password')
+      .exists()
+      .notEmpty()
+      .withMessage('Password field empty')
+      .isLength({ min: 6, max: 26 })
+      .withMessage('Password must be at 6-26 char long.')
+      .trim(),
+  ],
+  async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    const errors = validator.validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(401).json({
+        error: errors,
+      });
+    }
+    next();
+  },
+  passport.authenticate('local-org'),
+  async (req: Request, res: Response): Promise<Response | void> => {
+    if (!req.user) {
+      return res.status(401).json({
+        error: 'Error occured in company login.',
+      });
+    }
+    const user = req.user as OrgI;
+    if (!user) {
+      return res.status(401).json({
+        error: 'No match for company.',
+      });
+    }
+    const token = jwt.sign(
+      {
+        type: 'ORG',
+        company_email: user.company_email,
+      },
+      process.env.SESSION_SECRET!,
+      {
+        expiresIn: '7d',
+      },
+    );
+    const refreshToken = jwt.sign(
+      {
+        user: user.company_email,
+      },
+      process.env.SESSION_SECRET!,
+      {
+        expiresIn: '30d',
+      },
+    );
+    res.cookie(refreshToken, refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    });
+    return res.json({
+      success: true,
+      user: user.company_email,
+      token,
+      refreshToken,
+    });
+  },
 );
 
 export default orgSignInRouter;

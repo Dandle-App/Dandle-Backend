@@ -16,7 +16,7 @@ import testRouter from './routes/test/testRouter';
 import signUpRouter from './routes/signup/signUpRouter';
 import signInRouter from './routes/signin/signInRouter';
 import startSocketIO from './socketio/SockIOConf';
-import requestRouter from "./routes/requests/requestRouter";
+import requestRouter from './routes/requests/requestRouter';
 
 const upload = multer();
 dotenv.config();
@@ -68,7 +68,8 @@ if (!process.env.SESSION_SECRET) {
 app.use(
   session({
     // @ts-ignore redis client will always be initialized before this.
-    store: new RedisStore({ client: redisClient }),
+    // eslint-disable-next-line new-cap
+    store: new RedisStore({ client: new connectRedis(session) }),
     saveUninitialized: false,
     secret: process.env.SESSION_SECRET,
     resave: false,
