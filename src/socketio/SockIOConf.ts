@@ -1,5 +1,4 @@
 import { Server } from 'socket.io';
-import Redis from 'ioredis';
 import http from 'http';
 import connectRedis from 'connect-redis';
 import redisClient from '../redis';
@@ -7,15 +6,15 @@ import ioredis from 'ioredis';
 import crypto from 'crypto';
 import { logger } from '../logging';
 
-export default (server: http.Server, redisclient: ioredis.Redis) => {
+async function socketconf(server: http.Server, redisclient: ioredis.Redis): Promise<Server | void> {
   const uuid = crypto.randomBytes(16).toString("hex");
   logger.info('Starting SocketIO...');
 
   const io = new Server(server);
-  io.on('connection', socket => {
+  await io.on('connection', async socket => {
     logger.info('Connection on the socket made.');
 
-    socket.on('CreateRequest', (reqObj) => {
+      await socket.on('CreateRequest', (reqObj) => {
       logger.info('Ping event received');
       redisclient.setnx(uuid, reqObj);
       // testing to see if this was implemented properly
@@ -31,3 +30,4 @@ export default (server: http.Server, redisclient: ioredis.Redis) => {
   });
   return io;
 };
+export default socketconf;
