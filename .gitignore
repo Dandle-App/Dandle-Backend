@@ -15,3 +15,5 @@ Express/.env
 dist/
 
 node_modules/
+
+.errors.log.icloud
