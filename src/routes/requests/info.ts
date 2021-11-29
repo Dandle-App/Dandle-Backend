@@ -1,18 +1,19 @@
 import express, {Request, Response} from 'express';
 import { io } from "socket.io-client";
 import { logger } from '../../logging';
-import { body, validationResult } from 'express-validator';
+import { param, validationResult } from 'express-validator';
+import parser from 'body-parser';
 import connectRedis from 'connect-redis';
 import redisClient from '../../redis';
 
 const router = express.Router();
 
 interface InfoRequest extends Request {
-    id?: string;
+    id: string;
 }
 const requestInfoRouter = router.get('/',
     [
-         body('id').isString().withMessage('id must be a string'),
+         param('id').isString().withMessage('id must be a string'),
     ],
     async (req: any, res: Response) => {
         // check if request has errors

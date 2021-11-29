@@ -1,6 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
+import bp from 'body-parser';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 import session from 'express-session';
@@ -56,6 +57,8 @@ prestart().catch(() => {
   logger.error('Error occurred during prestart!');
 });
 app.use(helmet()); // security basics
+app.use(bp.json());
+app.use(bp.urlencoded({extended: true}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(upload.none());
