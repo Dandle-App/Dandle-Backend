@@ -25,6 +25,7 @@
     "express-session": "^1.17.2",
     "express-validator": "^6.12.2",
     "express-winston": "^4.2.0",
+    "g": "^2.0.1",
     "helmet": "^4.6.0",
     "ioredis": "^4.27.9",
     "jsonwebtoken": "^8.5.1",
