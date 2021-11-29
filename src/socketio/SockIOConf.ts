@@ -10,11 +10,10 @@ async function socketconf(server: http.Server, redisclient: ioredis.Redis): Prom
   const uuid = crypto.randomBytes(16).toString("hex");
   logger.info('Starting SocketIO...');
 
-  const io = new Server(server);
-  await io.on('connection', async socket => {
+  const io = new Server(server, {cors: {origin: "*"}});
+  await io.on('connection',   socket => {
     logger.info('Connection on the socket made.');
-
-      await socket.on('CreateRequest', (reqObj) => {
+      socket.on('CreateRequest',  (reqObj) => {
       logger.info('Ping event received');
       redisclient.setnx(uuid, reqObj);
       // testing to see if this was implemented properly
@@ -25,7 +24,14 @@ async function socketconf(server: http.Server, redisclient: ioredis.Redis): Prom
           logger.info(result);
         }
       });
-      socket.emit('requestCreated', {id: uuid});
+      socket.on('RoomJoinRequest', (room: string) => {
+
+      });
+      socket.on('RoomLeaveRequest', (room: string) => {
+
+      });
+      socket.emit('requestCreated', {id: uuid, obj: reqObj});
+
     });
   });
   return io;

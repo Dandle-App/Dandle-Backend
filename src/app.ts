@@ -15,7 +15,7 @@ import indexRouter from './routes';
 import testRouter from './routes/test/testRouter';
 import signUpRouter from './routes/signup/signUpRouter';
 import signInRouter from './routes/signin/signInRouter';
-import startSocketIO from './socketio/SockIOConf';
+import socketconf from './socketio/SockIOConf';
 import requestRouter from "./routes/requests/requestRouter";
 
 const upload = multer();
@@ -116,6 +116,6 @@ const server = app.listen(port, () => {
   logger.info(`Server started. Listening on port: ${port}`);
 });
 
-startSocketIO(server, redisClient);
+socketconf(server, redisClient);
 
 export default app;
