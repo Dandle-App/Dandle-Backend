@@ -37,6 +37,7 @@
     "passport": "^0.5.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "redis-commander": "^0.7.2",
     "socket.io": "^4.3.1",
     "socket.io-client": "^4.4.0",
     "swagger-jsdoc": "^6.1.0",
