@@ -6,4 +6,5 @@ const signInRouter = express.Router();
 
 signInRouter.use('/staff', staffSignInRouter);
 signInRouter.use('/org', orgSignInRouter);
+
 export default signInRouter;

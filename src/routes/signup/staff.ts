@@ -6,9 +6,9 @@ import bcrypt from 'bcrypt';
 import Staff, {OrgEmbeddedI, StaffI} from '../../models/staff';
 import * as validator from "express-validator";
 
-const staffSignUpRouter = express.Router();
+const router = express.Router();
 
-staffSignUpRouter.post('/staff',
+export let staffSignUpRouter = router.post('/staff',
    [
       validator
           .check('username')

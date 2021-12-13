@@ -8,6 +8,7 @@ import Organization, { OrgI } from '../../models/organization'
 
 const orgSignInRouter = express.Router();
 
+
 interface RefreshTokenI extends jwt.JwtPayload {
     company_email?: string,
 }
@@ -129,7 +130,6 @@ orgSignInRouter.post(
                 .trim(),
         ],
     async (req: Request, res: Response, next: NextFunction,): Promise<Response | void> => {
-
         const errors = validator.validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(401).json({
