@@ -25,8 +25,23 @@ const requestInfoRouter = router.get('/',
         else {
             logger.info('Requesting info');
             logger.info(req.query.id);
-            let queryId = JSON.stringify(req.query.id);
-            redisClient.get(queryId, (err, reply) => {
+            let queryId = req.query.id;
+            // @ts-ignore
+            queryId = queryId.toString();
+            try {
+                let reply = await redisClient.get(queryId);
+                logger.info(reply);
+                let replyStr = JSON.stringify(reply);
+                res.status(200).send({
+                    message: replyStr,
+                });
+            }
+            catch (e) {
+                res.status(401).json({err: e});
+            }
+            // previous implementation using callbacks. (works)
+
+            /*await redisClient.get(queryId, (err, reply) => {
                 if(err){
                     res.status(401).json({err: err});
                     return;
@@ -39,8 +54,7 @@ const requestInfoRouter = router.get('/',
                         message: replyStr,
                     });
                 }
-
-            });
+            });*/
         }
     });
 
