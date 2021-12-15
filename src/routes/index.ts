@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import {logger} from '../logging';
 
 const indexRouter = express.Router();
 

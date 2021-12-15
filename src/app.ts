@@ -1,6 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
+import bp from 'body-parser';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 import session from 'express-session';
@@ -9,13 +10,15 @@ import passport from 'passport';
 import multer from 'multer';
 import winston from 'winston';
 import expressWinston from 'express-winston';
+import { Server } from 'http';
 import redisClient from './redis';
 import { logger } from './logging';
 import indexRouter from './routes';
 import testRouter from './routes/test/testRouter';
 import signUpRouter from './routes/signup/signUpRouter';
 import signInRouter from './routes/signin/signInRouter';
-import startSocketIO from './socketio/SockIOConf';
+import socketconf from './socketio/SockIOConf';
+import requestRouter from './routes/requests/requestRouter';
 
 const upload = multer();
 dotenv.config();
@@ -55,6 +58,8 @@ prestart().catch(() => {
   logger.error('Error occurred during prestart!');
 });
 app.use(helmet()); // security basics
+app.use(bp.json());
+app.use(bp.urlencoded({extended: true}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(upload.none());
@@ -77,27 +82,31 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(expressWinston.logger({
-  transports: [
-    new winston.transports.File({
-      format: winston.format.combine(
-        winston.format.label({ label: 'express-internal' }),
-        winston.format.timestamp(),
-        winston.format.json(),
-      ),
-      filename: 'logs.log',
-    }),
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.label({ label: 'express-internal' }),
-        winston.format.timestamp(),
-        winston.format.json(),
-      ),
-    }),
-  ],
-  expressFormat: true,
-  colorize: true,
-}));
+app.use(
+  expressWinston.logger({
+    transports: [
+      new winston.transports.File({
+        format: winston.format.combine(
+          winston.format.label({ label: 'express-internal' }),
+          winston.format.timestamp(),
+          winston.format.json(),
+        ),
+        filename: 'logs.log',
+      }),
+      new winston.transports.Console({
+        format: winston.format.combine(
+          winston.format.label({ label: 'express-internal' }),
+          winston.format.timestamp(),
+          winston.format.padLevels(),
+          winston.format.colorize(),
+          winston.format.simple(),
+        ),
+      }),
+    ],
+    expressFormat: true,
+    colorize: true,
+  }),
+);
 
 require('./auth/passportConfig')(passport);
 
@@ -105,14 +114,29 @@ app.use('/', indexRouter);
 app.use('/test', testRouter);
 app.use('/signup', signUpRouter);
 app.use('/signin', signInRouter);
+app.use('/requests', requestRouter);
 
 // Start the server up!
-const port = normalizePort(process.env.PORT || '3000');
-const server = app.listen(port, () => {
-  logger.info(`Server started. Listening on port: ${port}`);
-});
+// if the env is not production then start the server with a random port
+// eslint-disable-next-line import/no-mutable-exports
+let server: Server;
 
-startSocketIO(server);
+if (process.env.NODE_ENV !== 'production') {
+  server = app.listen(0, () => {
+    // if server is not null then log the port
+    if (server !== null) {
+      // @ts-ignore: Object is possibly 'null'.
+      const { port } = server.address();
+      logger.info(`Server is listening on port ${port}`);
+    }
+  });
+} else {
+  // if the env is production then start the server on the port specified in the env
+  const port = normalizePort(process.env.PORT || '3000');
+  server = app.listen(port, () => {
+    logger.info(`Server started on port ${port}`);
+  });
+}
 
-export const App = app;
-export const Server = server;
+// export the app and the server for testing
+export { app, server };

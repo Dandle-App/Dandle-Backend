@@ -1,4 +1,4 @@
-import {Server as server} from '../../../src/app';
+import {server as app} from '../../../src/app';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { logger } from '../../../src/logging';
@@ -39,32 +39,15 @@ describe('GET /signin/staff', () => {
   afterAll((done) => {
     Staff.deleteOne({
       username: 'testuse@test.com',
-    }).catch((error) => {
-      logger.error(JSON.stringify(error));
+      password: bcrypt.hashSync('password1234', 10),
+      staff_name: 'Test McTesterson',
+    }).then(() => {
       mongoose.disconnect().then(() => {
-        logger.info('Closing the DB connection...');
-        redisClient.quit();
-        done();
+        redisClient.quit().then(() => {
+          done();
+        });
       });
     });
-    
-    server.close()
-  });
-
-  it('should create the user with valid param', async () => {
-    const res_created = await request(server)
-      .post('/signin/staff')
-      .type('form')
-      .field('username', 'testuse@test.com')
-      .field('password', 'password1234')
-      .field('staffName', 'John Doe')
-      .expect(200);
-
-    expect(res_created.body).toHaveProperty('success');
-    // Check that the user was actually put into the database
-    let userFromDb = await Staff.findOne({username: 'testuse@test.com'});
-
-    expect(userFromDb).toBeDefined();
   });
 
   it('should fail if invalid params are sent', async () => {
@@ -77,10 +60,6 @@ describe('GET /signin/staff', () => {
       .expect(401);
 
     expect(res_created.body).toHaveProperty('error');
-    // Check that the user was actually put into the database
-    let userFromDb = await Staff.findOne({username: 'testuse@test.com'});
-
-    expect(userFromDb).toBeNull()
   });
 
   it('should fail if invalid params are sent', async () => {
@@ -93,9 +72,5 @@ describe('GET /signin/staff', () => {
       .expect(401);
 
     expect(res_created.body).toHaveProperty('error');
-    // Check that the user was actually put into the database
-    let userFromDb = await Staff.findOne({username: 'testuse@test.com'});
-
-    expect(userFromDb).toBeNull();
   });
 });

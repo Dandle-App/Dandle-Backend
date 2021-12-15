@@ -8,7 +8,7 @@ import Organization, { OrgI } from '../../models/organization';
 const orgSignInRouter = express.Router();
 
 interface RefreshTokenI extends jwt.JwtPayload {
-  company_email?: string,
+  company_email?: string;
 }
 
 orgSignInRouter.post(
@@ -38,11 +38,15 @@ orgSignInRouter.post(
       'You must provide a valid token in either cookies or body.',
     ),
   ],
-  async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
     const errors = validator.validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(401).json({
-        error: 'Username/Password Validation Error',
+        error: errors,
       });
     }
     return next();
@@ -77,7 +81,9 @@ orgSignInRouter.post(
       });
     }
 
-    const org = await Organization.findOne({ company_email: payload.company_email });
+    const org = await Organization.findOne({
+      company_email: payload.company_email,
+    });
 
     if (!org) {
       return res.status(500).json({
@@ -90,13 +96,15 @@ orgSignInRouter.post(
       });
     }
 
-    const newToken = jwt.sign({
-      company_email: org.company_email,
-    },
-    process.env.SESSION_SECRET!,
-    {
-      expiresIn: '7d',
-    });
+    const newToken = jwt.sign(
+      {
+        company_email: org.company_email,
+      },
+      process.env.SESSION_SECRET!,
+      {
+        expiresIn: '7d',
+      },
+    );
 
     return res.json({
       token: newToken,
@@ -125,7 +133,11 @@ orgSignInRouter.post(
       .withMessage('Password must be at 6-26 char long.')
       .trim(),
   ],
-  async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
     const errors = validator.validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(401).json({
