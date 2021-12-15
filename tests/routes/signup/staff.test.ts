@@ -1,4 +1,4 @@
-import app from '../../../src/app';
+import {server as app} from '../../../src/app';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { logger } from '../../../src/logging';
@@ -42,31 +42,13 @@ describe('GET /signin/staff', () => {
       username: 'testuse@test.com',
       password: bcrypt.hashSync('password1234', 10),
       staff_name: 'Test McTesterson',
-    }).catch((error) => {
-      logger.error(JSON.stringify(error));
+    }).then(() => {
+      mongoose.disconnect().then(() => {
+        redisClient.quit().then(() => {
+          done();
+        });
+      });
     });
-    mongoose.disconnect().then(() => {
-      logger.info('Closing the DB connection...');
-      redisClient.quit();
-      done();
-    });
-  });
-
-  it('should create the user with valid param', async () => {
-    const res_created = await request(app)
-      .post('/signin/staff')
-      .type('form')
-      .field('username', 'testuse@test.com')
-      .field('password', 'password1234')
-      .field('staffName', 'John Doe')
-      .expect(200);
-
-    expect(res_created.body).toHaveProperty('successful');
-    // Check that the user was actually put into the database
-    let userFromDb = await Staff.findOne({username: 'testuse@test.com'});
-
-    expect(userFromDb).toBeDefined();
-    expect(userFromDb).toHaveProperty('staffName', 'John Doe');
   });
 
   it('should fail if invalid params are sent', async () => {
@@ -79,11 +61,6 @@ describe('GET /signin/staff', () => {
       .expect(401);
 
     expect(res_created.body).toHaveProperty('error');
-    expect(res_created.body).toHaveProperty('successful');
-    // Check that the user was actually put into the database
-    let userFromDb = await Staff.findOne({username: 'testuse@test.com'});
-
-    expect(userFromDb).toBeNull()
   });
 
   it('should fail if invalid params are sent', async () => {
@@ -96,10 +73,5 @@ describe('GET /signin/staff', () => {
       .expect(401);
 
     expect(res_created.body).toHaveProperty('error');
-    expect(res_created.body).toHaveProperty('successful');
-    // Check that the user was actually put into the database
-    let userFromDb = await Staff.findOne({username: 'testuse@test.com'});
-
-    expect(userFromDb).toBeNull();
   });
 });
