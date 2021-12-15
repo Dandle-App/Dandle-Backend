@@ -6,7 +6,6 @@ import redisClient from '../../../src/redis';
 import Staff from '../../../src/models/staff';
 import bcrypt from 'bcrypt';
 import jwt_decode from 'jwt-decode';
-import {CookieAccessInfo} from 'cookiejar';
 
 describe('GET /signin/staff', () => {
   beforeAll((done) => {
@@ -51,7 +50,7 @@ describe('GET /signin/staff', () => {
   });
 
   it('should accept a valid username and password', async () => {
-    const res_good = await request(server)
+    const res_good = await request(app)
       .post('/signin/staff')
       .type('form')
       .field('username', 'testuse@test.com')
@@ -71,7 +70,7 @@ describe('GET /signin/staff', () => {
     expect(decodedJWT).toHaveProperty('orgs');
   });
   it('should accept a reject incorrect username', async () => {
-    const res_incorrect_username = await request(server)
+    const res_incorrect_username = await request(app)
       .post('/signin/staff')
       .type('form')
       .field('username', 'test@test.com')
@@ -81,7 +80,7 @@ describe('GET /signin/staff', () => {
     expect(res_incorrect_username.statusCode).toEqual(401)
   });
   it('should reject incorrect password', async () => {
-    const res_incorrect_password = await request(server)
+    const res_incorrect_password = await request(app)
       .post('/signin/staff')
       .type('form')
       .field('username', 'tst@test.com')
@@ -92,7 +91,7 @@ describe('GET /signin/staff', () => {
   });
 
   it('should reject invalid inputs', async () => {
-    const res_invalid_username = await request(server)
+    const res_invalid_username = await request(app)
       .post('/signin/staff')
       .type('form')
       .field('username', 'testuse')
@@ -104,7 +103,7 @@ describe('GET /signin/staff', () => {
       'Username and/or password validation failure',
     );
 
-    const res_invalid_password = await request(server)
+    const res_invalid_password = await request(app)
       .post('/signin/staff')
       .type('form')
       .field('username', 'testuse@test.com')

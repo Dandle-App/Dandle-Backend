@@ -59,7 +59,7 @@ prestart().catch(() => {
 });
 app.use(helmet()); // security basics
 app.use(bp.json());
-app.use(bp.urlencoded({extended: true}));
+app.use(bp.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(upload.none());
@@ -128,6 +128,7 @@ if (process.env.NODE_ENV !== 'production') {
       // @ts-ignore: Object is possibly 'null'.
       const { port } = server.address();
       logger.info(`Server is listening on port ${port}`);
+      socketconf(server, redisClient);
     }
   });
 } else {
@@ -135,6 +136,7 @@ if (process.env.NODE_ENV !== 'production') {
   const port = normalizePort(process.env.PORT || '3000');
   server = app.listen(port, () => {
     logger.info(`Server started on port ${port}`);
+    socketconf(server, redisClient);
   });
 }
 

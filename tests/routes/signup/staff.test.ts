@@ -51,7 +51,7 @@ describe('GET /signin/staff', () => {
   });
 
   it('should fail if invalid params are sent', async () => {
-    const res_created = await request(server)
+    const res_created = await request(app)
       .post('/signin/staff')
       .type('form')
       .field('username', 'testuse')
@@ -63,7 +63,7 @@ describe('GET /signin/staff', () => {
   });
 
   it('should fail if invalid params are sent', async () => {
-    const res_created = await request(server)
+    const res_created = await request(app)
       .post('/signin/staff')
       .type('form')
       .field('username', 'tes')
