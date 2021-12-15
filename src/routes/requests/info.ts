@@ -1,5 +1,5 @@
-import express, {Request, Response} from 'express';
-import { io } from "socket.io-client";
+import express, { NextFunction, Request, Response } from 'express';
+import * as validator from 'express-validator';
 import { logger } from '../../logging';
 import { param, validationResult, query } from 'express-validator';
 import parser from 'body-parser';
@@ -57,6 +57,7 @@ const requestInfoRouter = router.get('/',
             });*/
         }
     });
+  },
+);
 
 export default requestInfoRouter;
-
