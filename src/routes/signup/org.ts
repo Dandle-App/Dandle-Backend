@@ -3,7 +3,6 @@ import Organization from '../../models/organization';
 import bcrypt from 'bcrypt';
 import { logger } from '../../logging';
 
-
 const router = express.Router();
 
 export let orgSignUpRouter = router.post('/', async (req: any, res: Response) => {
