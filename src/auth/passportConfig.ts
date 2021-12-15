@@ -1,11 +1,11 @@
 import LocalStrategy from 'passport-local';
 import { ExtractJwt, Strategy as JWTStrategy } from 'passport-jwt';
 import bcrypt from 'bcrypt';
+import { JwtPayload } from 'jsonwebtoken';
 import Staff, { StaffI } from '../models/staff';
 import Organization, { OrgI } from '../models/organization';
 import { logger } from '../logging';
 import User, { UserI } from '../models/user';
-import { JwtPayload } from 'jsonwebtoken';
 
 module.exports = (passport: any) => {
   /**
@@ -42,7 +42,9 @@ module.exports = (passport: any) => {
       async (jwtPayload: JwtPayload, done) => {
         if (jwtPayload.type === 'STAFF') {
           try {
-            const user = await Staff.findOne({ company_email: jwtPayload.company_email });
+            const user = await Staff.findOne({
+              company_email: jwtPayload.company_email,
+            });
             if (user) {
               done(null, user);
             } else {
@@ -55,8 +57,10 @@ module.exports = (passport: any) => {
         }
         if (jwtPayload.type === 'ORG') {
           try {
-            const user = await Organization.findOne( { company_email: jwtPayload.company_email });
-            if(user) {
+            const user = await Organization.findOne({
+              company_email: jwtPayload.company_email,
+            });
+            if (user) {
               done(null, user);
             } else {
               done(null, null);
@@ -105,52 +109,56 @@ module.exports = (passport: any) => {
     ),
   );
   passport.use(
-      'local-org',
-      new LocalStrategy.Strategy(
-          (username: string, password: string, done: any) => {
-            const company_email = username;
-            const password_hash = password;
-            Organization.countDocuments( { company_email }, (err, count) => {
-              if (err) {
-                const errorString: string = JSON.stringify(err);
-                logger.error(errorString);
-                done(null, null, {
-                  error: errorString,
-                });
-              }
-
-              if (count > 0) {
-                Organization.findOne({ company_email }, (error: any, dbOrgDoc: any) => {
-
-                  if(error) {
-                    return done(error);
-                  }
-                  if(!dbOrgDoc) {
-                    return done(null, false, {
-                      error: 'Incorrect company_email.',
-                    });
-                  }
-
-                  logger.info(password_hash);
-                  logger.info(dbOrgDoc.password_hash);
-                  const passwordMatch = bcrypt.compareSync(password_hash, dbOrgDoc.password_hash);
-
-                  if(!passwordMatch) {
-                    return done(null, false, {
-                      error: 'Incorrect password.',
-                    })
-                  }
-                  return done(null, dbOrgDoc);
-                });
-
-              } else {
-                done(null, null, {
-                  error: "Company not found.",
-                });
-              }
+    'local-org',
+    new LocalStrategy.Strategy(
+      (username: string, password: string, done: any) => {
+        const company_email = username;
+        const password_hash = password;
+        Organization.countDocuments({ company_email }, (err, count) => {
+          if (err) {
+            const errorString: string = JSON.stringify(err);
+            logger.error(errorString);
+            done(null, null, {
+              error: errorString,
             });
-          },
-      ),
+          }
+
+          if (count > 0) {
+            Organization.findOne(
+              { company_email },
+              (error: any, dbOrgDoc: any) => {
+                if (error) {
+                  return done(error);
+                }
+                if (!dbOrgDoc) {
+                  return done(null, false, {
+                    error: 'Incorrect company_email.',
+                  });
+                }
+
+                logger.info(password_hash);
+                logger.info(dbOrgDoc.password_hash);
+                const passwordMatch = bcrypt.compareSync(
+                  password_hash,
+                  dbOrgDoc.password_hash,
+                );
+
+                if (!passwordMatch) {
+                  return done(null, false, {
+                    error: 'Incorrect password.',
+                  });
+                }
+                return done(null, dbOrgDoc);
+              },
+            );
+          } else {
+            done(null, null, {
+              error: 'Company not found.',
+            });
+          }
+        });
+      },
+    ),
   );
   passport.use(
     'local-user',
@@ -238,7 +246,6 @@ module.exports = (passport: any) => {
       };
       done(null, sessionUser);
     }
-
   });
   /**
    * This is responsible for getting the company_email from session and then get the user from
@@ -262,23 +269,23 @@ module.exports = (passport: any) => {
             done(error, null);
           });
       } else if (user.type === 'USER') {
-        Staff.findOne({company_email: user.company_email})
-            .then((document) => {
-              done(null, document);
-            })
-            .catch((error) => {
-              logger.error(JSON.stringify(error));
-              done(error, null);
-            });
+        Staff.findOne({ company_email: user.company_email })
+          .then((document) => {
+            done(null, document);
+          })
+          .catch((error) => {
+            logger.error(JSON.stringify(error));
+            done(error, null);
+          });
       } else if (user.type == 'ORG') {
-        Organization.findOne({company_email: user.company_email})
-            .then((document) => {
-              done(null, document);
-            })
-            .catch((error) => {
-              logger.error(JSON.stringify(error));
-              done(error, null);
-            });
+        Organization.findOne({ company_email: user.company_email })
+          .then((document) => {
+            done(null, document);
+          })
+          .catch((error) => {
+            logger.error(JSON.stringify(error));
+            done(error, null);
+          });
       }
     },
   );

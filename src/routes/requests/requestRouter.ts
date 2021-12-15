@@ -1,5 +1,5 @@
-import express from 'express'
-import requestInfoRouter from "./info";
+import express from 'express';
+import requestInfoRouter from './info';
 
 const requestRouter = express.Router();
 

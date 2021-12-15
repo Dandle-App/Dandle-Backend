@@ -1,4 +1,4 @@
-import app from '../../../src/app';
+import {server as app} from '../../../src/app';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { logger } from '../../../src/logging';
@@ -41,22 +41,22 @@ describe('GET /signin/staff', () => {
       username: 'testuse@test.com',
       password: bcrypt.hashSync('password1234', 10),
       staff_name: 'Test McTesterson',
-    }).catch((error) => {
-      logger.error(JSON.stringify(error));
-    });
-    mongoose.disconnect().then(() => {
-      logger.info('Closing the DB connection...');
-      redisClient.quit();
-      done();
+    }).then(() => {
+      mongoose.disconnect().then(() => {
+        redisClient.quit().then(() => {
+          done();
+        });
+      });
     });
   });
+
   it('should accept a valid username and password', async () => {
     const res_good = await request(app)
       .post('/signin/staff')
       .type('form')
       .field('username', 'testuse@test.com')
       .field('password', 'password1234')
-      .expect(200);
+      .expect(200)
 
     expect(res_good.body).toHaveProperty('success');
     expect(res_good.body).toHaveProperty('user');
@@ -76,7 +76,7 @@ describe('GET /signin/staff', () => {
       .type('form')
       .field('username', 'test@test.com')
       .field('password', 'password123')
-      .expect(401);
+      .expect(401)
 
     expect(res_incorrect_username.statusCode).toEqual(401)
   });
@@ -86,7 +86,7 @@ describe('GET /signin/staff', () => {
       .type('form')
       .field('username', 'tst@test.com')
       .field('password', 'password1234')
-      .expect(401);
+      .expect(401)
 
     expect(res_incorrect_password.statusCode).toEqual(401)
   });
@@ -97,7 +97,7 @@ describe('GET /signin/staff', () => {
       .type('form')
       .field('username', 'testuse')
       .field('password', 'password1234')
-      .expect(401);
+      .expect(401)
 
     expect(res_invalid_username.body).toHaveProperty('error');
     expect(res_invalid_username.body.error).toEqual(
@@ -109,7 +109,7 @@ describe('GET /signin/staff', () => {
       .type('form')
       .field('username', 'testuse@test.com')
       .field('password', 'pass')
-      .expect(401);
+      .expect(401)
 
     expect(res_invalid_password.body).toHaveProperty('error');
     expect(res_invalid_password.body.error).toEqual(
