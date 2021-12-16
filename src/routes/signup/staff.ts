@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import * as validator from 'express-validator';
 import Staff from '../../models/staff';
 
-const router = express.Router();
+const staffSignUpRouter = express.Router();
 
 staffSignUpRouter.post('/staff',
   [

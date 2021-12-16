@@ -2,6 +2,8 @@ import express, { Response, Request, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import * as validator from 'express-validator';
 import Organization from '../../models/organization';
+import { info } from 'console';
+import { logger } from '../../logging';
 
 const router = express.Router();
 
@@ -41,6 +43,7 @@ const orgSignUpRouter = router.post('/',
   ],
   async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     const errors = validator.validationResult(req);
+    logger.info(JSON.stringify(errors));
     if (!errors.isEmpty()) {
       return res.status(401).json({
         error: errors,
@@ -49,7 +52,6 @@ const orgSignUpRouter = router.post('/',
     return next();
   },
   async (req: any, res: Response) => {
-    JSON.stringify(req.body);
     const hashedOrgPassword: String = bcrypt.hashSync(req.body.password, 10);
     const doc = {
       company_name: req.body.company_name,
@@ -57,6 +59,7 @@ const orgSignUpRouter = router.post('/',
       company_phone_num: req.body.company_phone_num,
       password_hash: hashedOrgPassword,
     };
+    logger.info(JSON.stringify(doc));
     try {
       const ent1 = new Organization(doc);
       const saveddoc = await ent1.save();

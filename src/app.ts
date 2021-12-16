@@ -121,7 +121,7 @@ app.use('/requests', requestRouter);
 // eslint-disable-next-line import/no-mutable-exports
 let server: Server;
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'test') {
   server = app.listen(0, () => {
     // if server is not null then log the port
     if (server !== null) {

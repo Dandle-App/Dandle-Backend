@@ -15,6 +15,6 @@ describe('GET /', () => {
   it('to be json response with the correct message.', async () => {
     const res = await request(app).get('/').expect(200);
 
-    expect(res.body.message).toEqual('This is index page! changed');
+    expect(res.body.message).toEqual('This is index page!');
   });
 });

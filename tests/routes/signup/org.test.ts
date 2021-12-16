@@ -1,4 +1,4 @@
-import app from '../../../src/app';
+import {server as app} from '../../../src/app';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { logger } from '../../../src/logging';
@@ -45,21 +45,14 @@ describe('GET /signup/org', () => {
         const res_good = await request(app)
             .post('/signup/org')
             .type('form')
-            .field('company_email', 'testuse@test.com')
+            .field('company_email', 'testus@gmail.com')
             .field('password', 'password1234')
+            .field('company_name', 'Company')
+            .field('company_phone_num', '1234567890')
             .expect(200);
-
-        expect(res_good.body).toHaveProperty('success');
-        expect(res_good.body).toHaveProperty('user');
-        expect(res_good.body).toHaveProperty('token');
-
-        expect(res_good.body.success).toBeTruthy();
-        expect(res_good.body.user).toEqual('testuse@test.com');
-        let decodedJWT = jwt_decode(res_good.body.token);
-        expect(decodedJWT).toBeDefined();
-        expect(decodedJWT).toHaveProperty('company_email');
-        expect(decodedJWT).toHaveProperty('company_name');
-        expect(decodedJWT).toHaveProperty('company_phone_num');
+        logger.info(JSON.stringify(res_good.body));
+        expect(res_good.body).toHaveProperty('successful_insert');
+        await Organization.deleteOne({company_email: 'testus@gmail.com'})
     });
 
     it('should reject invalid inputs', async () => {
@@ -71,9 +64,6 @@ describe('GET /signup/org', () => {
             .expect(401);
 
         expect(res_invalid_username.body).toHaveProperty('error');
-        expect(res_invalid_username.body.error).toEqual(
-            'Company_email and/or password validation failure',
-        );
 
         const res_invalid_password = await request(app)
             .post('/signup/org')
@@ -83,8 +73,5 @@ describe('GET /signup/org', () => {
             .expect(401);
 
         expect(res_invalid_password.body).toHaveProperty('error');
-        expect(res_invalid_password.body.error).toEqual(
-            'Company_email and/or password validation failure',
-        );
     });
 });
